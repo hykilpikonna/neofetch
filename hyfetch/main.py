@@ -18,16 +18,14 @@ from .neofetch_util import *
 from .presets import PRESETS
 
 
-def check_config() -> Config:
+def check_config(path) -> Config:
     """
     Check if the configuration exists. Return the config object if it exists. If not, call the
     config creator
 
-    TODO: Config path param
-
     :return: Config object
     """
-    if CONFIG_PATH.is_file():
+    if path.is_file():
         try:
             return Config.from_dict(json.loads(CONFIG_PATH.read_text('utf-8')))
         except KeyError:
@@ -38,6 +36,7 @@ def check_config() -> Config:
 
 def literal_input(prompt: str, options: Iterable[str], default: str, show_ops: bool = True) -> str:
     """
+
     Ask the user to provide an input among a list of options
 
     :param prompt: Input prompt
@@ -355,6 +354,7 @@ def run():
     parser = argparse.ArgumentParser(description=color(f'{hyfetch} - neofetch with flags <3'))
 
     parser.add_argument('-c', '--config', action='store_true', help=color(f'Configure {hyfetch}'))
+    parser.add_argument('-C', '--config-file', dest='config_file', default=CONFIG_PATH, help=f'Use another config file')
     parser.add_argument('-p', '--preset', help=f'Use preset', choices=PRESETS.keys())
     parser.add_argument('-m', '--mode', help=f'Color mode', choices=['8bit', 'rgb'])
     parser.add_argument('--c-scale', dest='scale', help=f'Lighten colors by a multiplier', type=float)
@@ -387,8 +387,12 @@ def run():
         print(get_distro_ascii())
         return
 
+    # Check if user provided alternative config path
+    if not args.config_file == CONFIG_PATH:
+        args.config_file = Path(os.path.abspath(args.config_file))
+
     # Load config or create config
-    config = create_config() if args.config else check_config()
+    config = create_config() if args.config else check_config(args.config_file)
 
     # Param overwrite config
     if args.preset:
