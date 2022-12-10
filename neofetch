@@ -2210,7 +2210,7 @@ get_wm() {
         *)         ps_flags=(-e) ;;
     esac
 
-    if [[ -O "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY:-wayland-0}" ]] || [[ -x "$(which lsof 2>/dev/null)" ]]; then
+    if [[ -O "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY:-wayland-0}" ]] && [[ -x "$(which lsof 2>/dev/null)" ]]; then
         if tmp_pid="$(lsof -t "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY:-wayland-0}" 2>&1)"; then
             wm="$(ps -p "${tmp_pid}" -ho comm=)"
         else
