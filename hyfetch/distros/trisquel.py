@@ -1,7 +1,7 @@
 
 from . import AsciiArt
 
-trisquel = AsciiArt(match=r'''"Trisquel"*''', color='4 6', ascii=r"""
+trisquel = AsciiArt(match=r'''"Trisquel"*''', color='4 6', ascii=r'''
 ${c1}                         ,o$$$o.
                       ,o$$Y\"""Y$$b
     ,o$$$$$$o.       ,$$'   ,   Y$$b
@@ -19,5 +19,4 @@ ${c1}     \""""     ${c2}d$$$$"'
               '$$$.       .$$'
                'a$$$o._.o$$a'
                   'a$$$$a'
-""")
-    
+''')

@@ -1,7 +1,7 @@
 
 from . import AsciiArt
 
-skiffos = AsciiArt(match=r'''"SkiffOS"*''', color='4 7', ascii=r"""
+skiffos = AsciiArt(match=r'''"SkiffOS"*''', color='4 7', ascii=r'''
 ${c2}
              ,@@@@@@@@@@@w,_
   ${c2}====~~~,,.${c2}A@@@@@@@@@@@@@@@@@W,_
@@ -12,5 +12,4 @@ ${c2}
         ${c1}`'||LLL{{""${c2}@$B@@@@@@@@@@@@@@@p${c1}||
             ${c1}`~=|||||||||||L"${c2}$@@@@@@@@@@@
                    ${c1}````'\"""\""""${c2}'\"""\"""""
-""")
-    
+''')
