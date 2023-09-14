@@ -1,12 +1,12 @@
 import sys
-import math
 import select
 import importlib
+from PIL import Image
 from time import sleep
 
 from hyfetch.color_util import RGB, color, printc
 from . import constants
-from .flag_utils import get_flag
+from .flag_utils import get_flag, get_flags
 
 if constants.IS_WINDOWS:
     msvcrt = importlib.import_module("msvcrt")
@@ -22,7 +22,7 @@ notice = "Press enter to continue"
 text_lines = text.split("\n")
 text_height = len(text_lines)
 text_width = len(text_lines[0])
-frame_delay = 0.1
+frame_delay = 0.01
 text_start_y = constants.TERM_HEIGHT // 2 - text_height // 2
 text_end_y = text_start_y + text_height
 text_start_x = constants.TERM_WIDTH // 2 - text_width // 2
@@ -30,7 +30,17 @@ text_end_x = text_start_x + text_width
 notice_start_x = constants.TERM_WIDTH - len(notice) - 1
 notice_end_x = constants.TERM_WIDTH - 1
 notice_y = constants.TERM_HEIGHT - 1
-flag_im = get_flag('rainbow', constants.TERM_WIDTH, constants.TERM_HEIGHT)
+
+FLAG_WIDTH = constants.TERM_WIDTH
+FLAG_HEIGHT = constants.TERM_HEIGHT
+
+flag_list = get_flags()
+total_flag_height = len(flag_list)*FLAG_HEIGHT
+flag_im = Image.new('RGB', (FLAG_WIDTH, total_flag_height))
+for i, flag in enumerate(flag_list):
+    tmp_im = get_flag(flag, FLAG_WIDTH, FLAG_HEIGHT)
+    flag_im.paste(tmp_im, (0, i*FLAG_HEIGHT))
+print(flag_im.size)
 
 
 def key_pressed():
@@ -61,11 +71,10 @@ def play_animation():
                         y_pos == notice_y and notice_start_x - 1 <= x_pos < notice_end_x + 1)
 
                 # Add flag
-                diff = int(4*math.sin(-2 * math.tau *
-                           (x_pos / constants.TERM_WIDTH) + frame))
+                diff = int(frame + 0.1 * x_pos)
 
                 rgb_color = RGB(
-                    *flag_im.getpixel((x_pos, (y_pos + diff) % constants.TERM_HEIGHT)))
+                    *flag_im.getpixel((x_pos % FLAG_WIDTH, (y_pos + diff) % total_flag_height)))
 
                 if overlay:
                     rgb_color = rgb_color.overlay(RGB(0, 0, 0), 0.5)
