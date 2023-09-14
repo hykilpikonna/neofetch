@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from __future__ import annotations
+
 import os
 import sys
 import json
 import argparse
 import datetime
 import traceback
-import importlib
 from pathlib import Path
 from .__version__ import VERSION
 from . import neofetch_util, pride_month, constants
@@ -82,13 +83,13 @@ def create_parser() -> argparse.ArgumentParser:
 def run():
     # Optional: Import readline
     try:
-        readline = importlib.import_module("readline")
+        import readline
     except ModuleNotFoundError:
         pass
 
     # On Windows: Try to fix color rendering if not in git bash
     if constants.IS_WINDOWS:
-        colorama = importlib.import_module("colorama")
+        import colorama
         colorama.just_fix_windows_console()
 
     parser = create_parser()

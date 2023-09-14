@@ -3,6 +3,8 @@
 Create configuration file interactively
 """
 
+from __future__ import annotations
+
 from math import ceil
 from .color_scale import Scale
 from .color_util import clear_screen

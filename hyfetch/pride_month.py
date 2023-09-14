@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import sys
 import random
 import select
-import importlib
 from time import sleep
 from PIL import Image
 
@@ -10,7 +11,7 @@ from . import constants
 from .flag_utils import get_flag, get_flags
 
 if constants.IS_WINDOWS:
-    msvcrt = importlib.import_module("msvcrt")
+    import msvcrt
 
 TEXT = r"""
 .======================================================.

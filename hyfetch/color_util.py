@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import colorsys
 from dataclasses import dataclass, astuple
 from .constants import GLOBAL_CFG

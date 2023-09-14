@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import os
 import sys
 import platform
-import importlib
 from .color_util import RGB, AnsiMode
 
 
@@ -85,10 +86,10 @@ def detect_ansi_mode() -> AnsiMode | None:
 
 
 def unix_read_osc(seq: int) -> str:
-    tty = importlib.import_module("tty")
-    signal = importlib.import_module("signal")
-    termios = importlib.import_module("termios")
-    select = importlib.import_module("select").select
+    import tty
+    import signal
+    import termios
+    from select import select
     # screen/tmux can't support OSC, because they can be connected to multiple
     # terminals concurrently.
     term = os.environ.get('TERM')
