@@ -1,10 +1,8 @@
 """
 This version of color_scale is a special version made without numpy dependency. The numpy version
-would be faster, but numpy is 11 MB large. In comparison, hyfetch 1.0.7 is only 105 kB, so it's not
+would be faster, but numpy is 11 MB. In comparison, hyfetch 1.0.7 is only 105 kB, so it's not
 a good idea to depend on numpy.
 """
-from __future__ import annotations
-
 from .color_util import RGB
 
 
