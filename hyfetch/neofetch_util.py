@@ -114,7 +114,6 @@ def recolor_ascii(asc: str, flag: str, lightness: float = 0.5, lightness_mode: s
     Use the color alignment to recolor an ascii art
     """
     asc = fill_starting(asc)
-
     # Remove existing colors
     asc = re.sub(RE_NEOFETCH_COLOR, '', asc)
 
@@ -160,10 +159,8 @@ def recolor_ascii(asc: str, flag: str, lightness: float = 0.5, lightness_mode: s
         else:
             raise NotImplementedError(
                 "lightness_mode must be either set_dl, set_raw, scale, or None")
-
         color_str = rgb_color.to_ansi(foreground=foreground)
-
-        if color_str != current_color and char != ' ':
+        if color_str != current_color and (char != ' ' or not foreground):
             new_asc += color_str
             current_color = color_str
         new_asc += char
