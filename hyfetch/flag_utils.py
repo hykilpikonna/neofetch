@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from PIL import Image
 
 
@@ -14,7 +15,7 @@ def get_flags() -> list:
         Alphabetical list of installed flags.
 
     """
-    files = os.listdir('hyfetch/flags')
+    files = os.listdir(Path(__file__).parent / 'flags')
     files_no_ext = [f.split('.')[0] for f in files]
     files_no_ext.sort()
     return files_no_ext
@@ -49,9 +50,9 @@ def get_flag(flag: str, x_len: int, y_len: int, rotation: int = 0) -> Image.Imag
 
     """
     # Get files in the flag directory
-    files = os.listdir('hyfetch/flags')
+    files = os.listdir(Path(__file__).parent / 'flags')
     # Remove file extensions
-    files_no_ext = [f.split('.')[0] for f in os.listdir('hyfetch/flags')]
+    files_no_ext = [f.split('.')[0] for f in files]
     # Get index of file in list of files without extensions, raise error if it doesn't exist
     try:
         index = files_no_ext.index(flag.lower())

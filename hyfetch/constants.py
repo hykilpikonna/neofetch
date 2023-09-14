@@ -5,7 +5,7 @@ import shutil
 import platform
 from dataclasses import dataclass
 from pathlib import Path
-from .helper_types import LightDark
+from .types import LightDark
 
 
 TERM_WIDTH, TERM_HEIGHT = shutil.get_terminal_size(fallback=(100, 20))
