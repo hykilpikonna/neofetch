@@ -2,10 +2,6 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from .color_util import RGB
-from .constants import GLOBAL_CFG
-from .types import LightDark, ColorSpacing
-
 
 def remove_duplicates(seq: Iterable) -> list:
     """
