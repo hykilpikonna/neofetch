@@ -101,6 +101,24 @@ def redistribute_rgb(r: int, g: int, b: int) -> tuple[int, int, int]:
     return int(gray + x * r), int(gray + x * g), int(gray + x * b)
 
 
+def rgb_to_ansi(array: np.array, foreground: bool = True):
+    """
+    Convert RGB numpy array to ANSI TrueColor (RGB) Escape Code.
+
+    This uses the 24-bit color encoding (an uint8 for each color value), and supports 16 million
+    colors. However, not all terminal emulators support this escape code. (For example, IntelliJ
+    debug console doesn't support it).
+
+    Currently, we do not know how to detect whether a terminal environment supports ANSI RGB. If 
+    you have any thoughts, feel free to submit an issue on our Github page!
+
+    :param foreground: Whether the color is for foreground text or background color
+    :return: ANSI RGB escape code like \033[38;2;255;100;0m
+    """
+    c = '38' if foreground else '48'
+    return f'\033[{c};2;{array[0]};{array[1]};{array[2]}m'
+
+
 @dataclass(unsafe_hash=True)
 class HSL:
     h: float
