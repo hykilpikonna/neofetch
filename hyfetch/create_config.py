@@ -72,7 +72,7 @@ class Configure:
         if self.det_bg is not None:
             return self.det_bg.is_light(), 'Detected background color'
 
-        clear_screen()
+        clear_screen(self.title)
         inp = literal_input('2. Is your terminal in &blight mode&~ or &4dark mode&~?',
                             ['light', 'dark'], 'dark')
         return inp == 'light', 'Selected background color'
@@ -83,7 +83,7 @@ class Configure:
         print()
 
     def print_flag_page(self, page: list[list[list[str]]], num_pages: int, page_num: int):
-        clear_screen()
+        clear_screen(self.title)
         self.print_title_prompt("Let's choose a flag!")
         printc('Installed flags:')
         print(f'Page: {page_num + 1} of {num_pages}')
@@ -93,7 +93,7 @@ class Configure:
         print()
 
     def select_lightness(self, light_dark, preset):
-        clear_screen()
+        clear_screen(self.title)
         self.print_title_prompt("Let's adjust the color brightness!")
         adj = "bright" if constants.GLOBAL_CFG.is_light else "dark"
         printc(
@@ -187,7 +187,7 @@ class Configure:
                 page -= 1
             else:
                 self.update_title(
-                    'Selected flag', preset)
+                    'Selected flag', recolor_ascii(preset, preset, rotation=270))
                 return preset
 
     def run(self) -> Config:
@@ -200,7 +200,7 @@ class Configure:
             Config object (automatically stored).
 
         """
-        clear_screen()
+        clear_screen(self.title)
 
         ##############################
         # 0. Check term size
@@ -214,8 +214,9 @@ class Configure:
         # 1. Select color system
 
         # Override global color mode
-        constants.GLOBAL_CFG.color_mode, ttl = self.select_color_system()
-        self.update_title(ttl, constants.GLOBAL_CFG.color_mode)
+        color_mode, ttl = self.select_color_system()
+        constants.GLOBAL_CFG.color_mode = color_mode
+        self.update_title(ttl, color_mode)
 
         ##############################
         # 2. Select light/dark mode
@@ -237,7 +238,7 @@ class Configure:
         self.update_title('Selected Brightness', f"{lightness:.2f}")
 
         # Create config
-        clear_screen()
+        clear_screen(self.title)
         config = Config(preset, constants.GLOBAL_CFG.color_mode,
                         light_dark, lightness)
 

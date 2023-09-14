@@ -9,7 +9,7 @@ from .helper_types import LightDark
 TERM_WIDTH, TERM_HEIGHT = shutil.get_terminal_size(fallback=(100, 20))
 
 CONFIGURE_FLAG_WIDTH = 18
-CONFIGURE_FLAG_HEIGHT = 6
+CONFIGURE_FLAG_HEIGHT = 3
 
 
 CONFIG_PATH = Path.home() / '.config/hyfetch.json'
