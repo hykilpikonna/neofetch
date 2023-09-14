@@ -1,9 +1,13 @@
+"""
+Utilities for playing the pride month animation
+"""
+
 import sys
+import random
 import select
 import importlib
-import random
-from PIL import Image
 from time import sleep
+from PIL import Image
 
 from hyfetch.color_util import RGB, color, printc
 from . import constants
@@ -12,23 +16,26 @@ from .flag_utils import get_flag, get_flags
 if constants.IS_WINDOWS:
     msvcrt = importlib.import_module("msvcrt")
 
-text = r"""
+TEXT = r"""
 .======================================================.
 | .  .              .__       .     .  .       , .   | |
 | |__| _.._ ._   .  [__)._.* _| _   |\/| _ ._ -+-|_  | |
 | |  |(_][_)[_)\_|  |   [  |(_](/,  |  |(_)[ ) | [ ) * |
 |        |  |  ._|                                     |
 '======================================================'""".strip("\n")
-notice = "Press enter to continue"
-text_lines = text.split("\n")
+NOTICE = "Press enter to continue"
+FRAME_DELAY = 0.01
+
+text_lines = TEXT.split("\n")
 text_height = len(text_lines)
 text_width = len(text_lines[0])
-frame_delay = 0.01
+
 text_start_y = constants.TERM_HEIGHT // 2 - text_height // 2
 text_end_y = text_start_y + text_height
 text_start_x = constants.TERM_WIDTH // 2 - text_width // 2
 text_end_x = text_start_x + text_width
-notice_start_x = constants.TERM_WIDTH - len(notice) - 1
+
+notice_start_x = constants.TERM_WIDTH - len(NOTICE) - 1
 notice_end_x = constants.TERM_WIDTH - 1
 notice_y = constants.TERM_HEIGHT - 1
 
@@ -39,18 +46,36 @@ flag_list = get_flags()
 random.shuffle(flag_list)
 total_flag_height = len(flag_list)*FLAG_HEIGHT
 flag_im = Image.new('RGB', (FLAG_WIDTH, total_flag_height))
+
 for i, flag in enumerate(flag_list):
     tmp_im = get_flag(flag, FLAG_WIDTH, FLAG_HEIGHT)
     flag_im.paste(tmp_im, (0, i*FLAG_HEIGHT))
 
 
 def key_pressed():
+    """
+    Check for key press
+
+    Returns
+    -------
+    bool
+        Key press status.
+
+    """
     if constants.IS_WINDOWS:
         return msvcrt.kbhit()  # Non-blocking check for key press
     return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
 
 
 def play_animation():
+    """
+    Play the pride month animation
+
+    Returns
+    -------
+    None.
+
+    """
     frame = 0
 
     def draw_frame(frame):
@@ -90,7 +115,7 @@ def play_animation():
                     buf += text_lines[y_pos -
                                       text_start_y][x_pos - text_start_x]
                 elif y_pos == notice_y and notice_start_x <= x_pos < notice_end_x:
-                    buf += notice[x_pos - notice_start_x]
+                    buf += NOTICE[x_pos - notice_start_x]
                 else:
                     buf += ' '
 
@@ -107,7 +132,7 @@ def play_animation():
             print("\033[2J\033[H", end="")
             draw_frame(frame)
             frame += 1
-            sleep(frame_delay)
+            sleep(FRAME_DELAY)
 
             if key_pressed():
                 break
