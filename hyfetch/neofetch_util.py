@@ -163,7 +163,7 @@ def recolor_ascii(asc: str, flag: str, lightness: float = 0.5, lightness_mode: s
 
         color_str = rgb_color.to_ansi(foreground=foreground)
 
-        if color_str != current_color:
+        if color_str != current_color and char != ' ':
             new_asc += color_str
             current_color = color_str
         new_asc += char
