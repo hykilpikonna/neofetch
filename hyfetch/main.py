@@ -7,6 +7,7 @@ import json
 import argparse
 import datetime
 import traceback
+import importlib
 from pathlib import Path
 from .__version__ import VERSION
 from . import neofetch_util, pride_month, constants
@@ -35,20 +36,32 @@ def check_config(path) -> Config:
 def create_parser() -> argparse.ArgumentParser:
     # Create CLI
     hyfetch = color('&l&bhyfetch&~&L')
-    parser = argparse.ArgumentParser(description=color(f'{hyfetch} - neofetch with flags <3'), prog="hyfetch")
+    parser = argparse.ArgumentParser(description=color(
+        f'{hyfetch} - neofetch with flags <3'), prog="hyfetch")
 
-    parser.add_argument('-c', '--config', action='store_true', help=color(f'Configure hyfetch'))
-    parser.add_argument('-C', '--config-file', dest='config_file', default=CONFIG_PATH, help=f'Use another config file')
-    parser.add_argument('-p', '--preset', help=f'Use preset', choices=list(PRESETS.keys()))
-    parser.add_argument('-m', '--mode', help=f'Color mode', choices=['8bit', 'rgb'])
-    parser.add_argument('-b', '--backend', help=f'Choose a *fetch backend', choices=['qwqfetch', 'neofetch', 'fastfetch', 'fastfetch-old'])
-    parser.add_argument('--args', help=f'Additional arguments pass-through to backend')
-    parser.add_argument('--c-scale', dest='scale', help=f'Lighten colors by a multiplier', type=float)
-    parser.add_argument('--c-set-l', dest='light', help=f'Set lightness value of the colors', type=float)
-    parser.add_argument('--c-overlay', action='store_true', dest='overlay', help=f'Use experimental overlay color adjusting instead of HSL lightness')
-    parser.add_argument('-V', '--version', dest='version', action='store_true', help=f'Check version')
-    parser.add_argument('--june', action='store_true', help=f'Show pride month easter egg')
-    parser.add_argument('--debug', action='store_true', help=f'Debug mode')
+    parser.add_argument('-c', '--config', action='store_true',
+                        help=color('Configure hyfetch'))
+    parser.add_argument('-C', '--config-file', dest='config_file',
+                        default=constants.CONFIG_PATH, help='Use another config file')
+    parser.add_argument('-p', '--preset', help='Use preset',
+                        choices=get_flags())
+    parser.add_argument('-m', '--mode', help='Color mode',
+                        choices=['8bit', 'rgb'])
+    parser.add_argument('-b', '--backend', help='Choose a *fetch backend',
+                        choices=['qwqfetch', 'neofetch', 'fastfetch', 'fastfetch-old'])
+    parser.add_argument(
+        '--args', help='Additional arguments pass-through to backend')
+    parser.add_argument('--c-scale', dest='scale',
+                        help='Lighten colors by a multiplier', type=float)
+    parser.add_argument('--c-set-l', dest='light',
+                        help='Set lightness value of the colors', type=float)
+    parser.add_argument('--c-overlay', action='store_true', dest='overlay',
+                        help='Use experimental overlay color adjusting instead of HSL lightness')
+    parser.add_argument('-V', '--version', dest='version',
+                        action='store_true', help='Check version')
+    parser.add_argument('--june', action='store_true',
+                        help='Show pride month easter egg')
+    parser.add_argument('--debug', action='store_true', help='Debug mode')
 
     parser.add_argument('-d', '--distro', '--test-distro',
                         dest='distro', help='Test for a specific distro')
@@ -57,9 +70,11 @@ def create_parser() -> argparse.ArgumentParser:
 
     # Hidden debug arguments
     # --test-print: Print the ascii distro and exit
-    parser.add_argument('--test-print', action='store_true', help=argparse.SUPPRESS)
+    parser.add_argument('--test-print', action='store_true',
+                        help=argparse.SUPPRESS)
     # --ask-exit: Ask for input before exiting
-    parser.add_argument('--ask-exit', action='store_true', help=argparse.SUPPRESS)
+    parser.add_argument('--ask-exit', action='store_true',
+                        help=argparse.SUPPRESS)
 
     return parser
 
@@ -67,7 +82,7 @@ def create_parser() -> argparse.ArgumentParser:
 def run():
     # Optional: Import readline
     try:
-        import readline
+        readline = importlib.import_module("readline")
     except ModuleNotFoundError:
         pass
 
