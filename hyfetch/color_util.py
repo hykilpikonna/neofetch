@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import colorsys
 from dataclasses import dataclass, astuple
-
+from typing import Iterable
 from .constants import GLOBAL_CFG
-from .types import *
+from .types import AnsiMode
 
 MINECRAFT_COLORS = [
 
@@ -101,7 +101,7 @@ def redistribute_rgb(r: int, g: int, b: int) -> tuple[int, int, int]:
     return int(gray + x * r), int(gray + x * g), int(gray + x * b)
 
 
-def rgb_to_ansi(array: np.array, foreground: bool = True):
+def rgb_to_ansi(array: Iterable, foreground: bool = True) -> str:
     """
     Convert RGB numpy array to ANSI TrueColor (RGB) Escape Code.
 
@@ -142,20 +142,20 @@ class RGB:
         return iter(astuple(self))
 
     @classmethod
-    def from_hex(cls, hex: str) -> "RGB":
+    def from_hex(cls, hex_val: str) -> "RGB":
         """
         Create color from hex code
 
         >>> RGB.from_hex('#FFAAB7')
         RGB(r=255, g=170, b=183)
 
-        :param hex: Hex color code
+        :param hex_val: Hex color code
         :return: RGB object
         """
-        hex = hex.lstrip("#")
-        r = int(hex[0:2], 16)
-        g = int(hex[2:4], 16)
-        b = int(hex[4:6], 16)
+        hex_val = hex_val.lstrip("#")
+        r = int(hex_val[0:2], 16)
+        g = int(hex_val[2:4], 16)
+        b = int(hex_val[4:6], 16)
         return cls(r, g, b)
 
     def to_ansi_rgb(self, foreground: bool = True) -> str:
@@ -195,7 +195,8 @@ class RGB:
         if gray:
             color = 232 + (r + g + b) / 33
         else:
-            color = 16 + int(r / 256. * 6) * 36 + int(g / 256. * 6) * 6 + int(b / 256. * 6)
+            color = 16 + int(r / 256. * 6) * 36 + \
+                int(g / 256. * 6) * 6 + int(b / 256. * 6)
 
         c = '38' if foreground else '48'
         return f'\033[{c};5;{int(color)}m'
@@ -231,7 +232,8 @@ class RGB:
         h, l, s = colorsys.rgb_to_hls(*[v / 255.0 for v in self])
         return HSL(h, s, l)
 
-    def set_light(self, light: float, at_least: bool | None = None, at_most: bool | None = None) -> 'RGB':
+    def set_light(self, light: float, at_least: bool | None = None,
+                  at_most: bool | None = None) -> 'RGB':
         """
         Set HSL lightness value
 

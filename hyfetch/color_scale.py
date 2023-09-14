@@ -28,7 +28,6 @@ def create_gradient(colors: list[RGB], resolution: int) -> list[RGB]:
     for i in range(len(colors) - 1):
         c1 = colors[i]
         c2 = colors[i + 1]
-        bi = i * resolution
 
         for ri in range(resolution):
             ratio = ri / resolution
