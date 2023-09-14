@@ -1,6 +1,7 @@
 import sys
 import select
 import importlib
+import random
 from PIL import Image
 from time import sleep
 
@@ -35,6 +36,7 @@ FLAG_WIDTH = constants.TERM_WIDTH
 FLAG_HEIGHT = constants.TERM_HEIGHT
 
 flag_list = get_flags()
+random.shuffle(flag_list)
 total_flag_height = len(flag_list)*FLAG_HEIGHT
 flag_im = Image.new('RGB', (FLAG_WIDTH, total_flag_height))
 for i, flag in enumerate(flag_list):
