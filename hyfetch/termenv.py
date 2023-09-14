@@ -113,7 +113,8 @@ def unix_read_osc(seq: int) -> str:
     t.flush()
 
     # stdin response timeout should be higher for ssh sessions
-    timeout = 0.05 if (os.environ.get('SSH_TTY') or os.environ.get('SSH_SESSION')) is None else 0.5
+    timeout = 0.05 if (os.environ.get('SSH_TTY')
+                       or os.environ.get('SSH_SESSION')) is None else 0.5
 
     # Wait for input to appear
     if not select([sys.stdin], [], [], timeout)[0]:
@@ -165,5 +166,3 @@ def get_background_color() -> RGB | None:
             return None
     if system.startswith("windows"):
         return None
-
-
