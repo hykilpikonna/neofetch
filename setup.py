@@ -36,7 +36,7 @@ setup(
     include_package_data=True,
     install_requires=[
         # Universal dependencies
-        'setuptools', 'typing_extensions', 'numpy', 'Pillow',
+        'setuptools', 'typing_extensions', 'Pillow',
 
         # Windows dependencies
         'psutil ; platform_system=="Windows"',

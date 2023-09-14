@@ -1,34 +1,65 @@
-from PIL import Image
-import numpy as np
+"""
+Utilities for handling flags
+"""
 import os
+from PIL import Image
 
 
-def get_flags() -> list:
+def get_flags() -> tuple:
+    """
+    Gets installed flags
+
+    Returns
+    -------
+    tuple
+        Alphabetical list of installed flags.
+
+    """
     files = os.listdir('hyfetch/flags')
-    files_no_ext = [f.split('.')[0] for f in os.listdir('hyfetch/flags')]
+    files_no_ext = tuple(f.split('.')[0] for f in files)
     return files_no_ext
 
 
-def get_array(flag: str, x_len: int, y_len: int, rotation: int = 0) -> np.array:
+def get_flag(flag: str, x_len: int, y_len: int, rotation: int = 0) -> Image.Image:
     """
-    Open the flag file, resize it, and return it as an array of size y * x * 3
-    """
+    Opens a flag file, then rotates and resizes it
 
+    Parameters
+    ----------
+    flag : str
+        flag name.
+    x_len : int
+        width of flag.
+    y_len : int
+        height of flag.
+    rotation : int, optional
+        Counterclockwise rotation of the image in degrees. The default is 0.
+
+    Raises
+    ------
+    error
+        Flag is not installed.
+    FileNotFoundError
+        Flag is not installed.
+
+    Returns
+    -------
+    img : Image.Image
+        RGB image of flag.
+
+    """
     # Get files in the flag directory
     files = os.listdir('hyfetch/flags')
     # Remove file extensions
     files_no_ext = [f.split('.')[0] for f in os.listdir('hyfetch/flags')]
-
     # Get index of file in list of files without extensions, raise error if it doesn't exist
     try:
         index = files_no_ext.index(flag)
-    except ValueError:
-        raise FileNotFoundError(f'{flag} flag does not exist')
+    except ValueError as ex:
+        raise FileNotFoundError(f'{flag} flag does not exist') from ex
 
     filename = files[index]
-    im = Image.open('hyfetch/flags/' + filename).convert('RGB')
-    im = im.rotate(rotation, expand=True)
-    # +1 to account for newlines
-    im = im.resize((x_len + 1, y_len), resample=Image.Resampling.NEAREST)
-    arr = np.array(im)
-    return arr
+    img = Image.open('hyfetch/flags/' + filename).convert('RGB')
+    img = img.rotate(rotation, expand=True)
+    img = img.resize((x_len, y_len), resample=Image.Resampling.NEAREST)
+    return img
