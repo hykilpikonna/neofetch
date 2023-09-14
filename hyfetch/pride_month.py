@@ -1,7 +1,3 @@
-"""
-Utilities for playing the pride month animation
-"""
-
 import sys
 import random
 import select

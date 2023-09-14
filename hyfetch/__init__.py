@@ -1,7 +1,3 @@
-"""
-Runs hyfetch
-"""
-
 from .main import run
 from .__version__ import VERSION
 

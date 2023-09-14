@@ -1,7 +1,3 @@
-"""
-Utilities for handling flags
-"""
-
 import os
 from PIL import Image
 

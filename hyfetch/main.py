@@ -88,7 +88,7 @@ def run():
 
     # On Windows: Try to fix color rendering if not in git bash
     if constants.IS_WINDOWS:
-        import colorama
+        colorama = importlib.import_module("colorama")
         colorama.just_fix_windows_console()
 
     parser = create_parser()

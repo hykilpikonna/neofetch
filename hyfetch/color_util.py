@@ -1,7 +1,3 @@
-"""
-Color utilities
-"""
-
 import colorsys
 from dataclasses import dataclass, astuple
 from .constants import GLOBAL_CFG

@@ -85,7 +85,7 @@ class Configure:
     def print_flag_page(self, page: list[list[list[str]]], num_pages: int, page_num: int):
         clear_screen(self.title)
         self.print_title_prompt("Let's choose a flag!")
-        printc('Installed flags:')
+        printc('Available flags:')
         print(f'Page: {page_num + 1} of {num_pages}')
         print()
         for i in page:
@@ -187,7 +187,7 @@ class Configure:
                 page -= 1
             else:
                 self.update_title(
-                    'Selected flag', recolor_ascii(preset, preset, rotation=270))
+                    'Selected flag', recolor_ascii(preset, preset, rotation=90))
                 return preset
 
     def run(self) -> Config:
