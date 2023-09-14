@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 
 from __future__ import annotations
 
@@ -171,7 +170,7 @@ def run():
             if args.scale > 0:
                 mode = ("scale", args.scale)
             else:
-                raise ValueError("Color scale must be larger than 0")
+                raise ValueError("Color scale must be greater than 0")
         elif args.light:
             mode = ("set_raw", args.light)
         else:
