@@ -1,10 +1,16 @@
-from __future__ import annotations
-
 import os
+import shutil
 import platform
 from dataclasses import dataclass
 from pathlib import Path
-from .types import LightDark
+from .helper_types import LightDark
+
+
+TERM_WIDTH, TERM_HEIGHT = shutil.get_terminal_size(fallback=(100, 20))
+
+CONFIGURE_FLAG_WIDTH = 18
+CONFIGURE_FLAG_HEIGHT = 6
+
 
 CONFIG_PATH = Path.home() / '.config/hyfetch.json'
 
@@ -33,6 +39,9 @@ CACHE_PATH = Path(os.getenv("LOCALAPPDATA") or os.getenv(
 
 @dataclass
 class GlobalConfig:
+    """
+    Global configuration
+    """
     # Global color mode default to 8-bit for compatibility
     color_mode: str
     override_distro: str | None
@@ -41,9 +50,32 @@ class GlobalConfig:
     use_overlay: bool
 
     def light_dark(self) -> LightDark:
+        """
+        Get color mode
+
+        Returns
+        -------
+        LightDark
+            string 'light' or string 'dark'.
+
+        """
         return 'light' if self.is_light else 'dark'
 
     def default_lightness(self, term: LightDark | None = None) -> float:
+        """
+        Get default lightness for a color mode
+
+        Parameters
+        ----------
+        term : LightDark | None, optional
+            string 'light' or string 'dark'. The default is None.
+
+        Returns
+        -------
+        float
+            default lightness.
+
+        """
         if term is None:
             term = self.light_dark()
         return 0.65 if term.lower() == 'dark' else 0.4

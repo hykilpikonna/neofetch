@@ -1,3 +1,7 @@
+"""
+Color utilities
+"""
+
 import colorsys
 from dataclasses import dataclass, astuple
 from .constants import GLOBAL_CFG
@@ -80,35 +84,30 @@ def clear_screen(title: str = ''):
         print()
 
 
-def redistribute_rgb(r: int, g: int, b: int) -> tuple[int, int, int]:
+def redistribute_rgb(rgb: list[int]) -> tuple[int, int, int]:
     """
     Redistribute RGB after lightening
 
     Credit: https://stackoverflow.com/a/141943/7346633
     """
-    threshold = 255.999
-    m = max(r, g, b)
-    if m <= threshold:
-        return int(r), int(g), int(b)
-    total = r + g + b
-    if total >= 3 * threshold:
-        return int(threshold), int(threshold), int(threshold)
-    x = (3 * threshold - total) / (3 * m - total)
-    gray = threshold - x * m
-    return int(gray + x * r), int(gray + x * g), int(gray + x * b)
+    threshold = 256
+    rgb_max = max(rgb)
+    if rgb_max < threshold:
+        return tuple(int(c) for c in rgb)
+    total = sum(rgb)
+    if total > 3 * threshold:
+        return 255, 255, 255
+    x = (3 * threshold - total) / (3 * rgb_max - total)
+    grey = threshold - x * rgb_max
+    return tuple(grey + x * c for c in rgb)
 
 
-@dataclass(unsafe_hash=True)
-class HSL:
-    h: float
-    s: float
-    l: float
+def rgb_to_hls(rgb) -> list:
+    return [*colorsys.rgb_to_hls(*[v / 255.0 for v in rgb])]
 
-    def __iter__(self):
-        return iter(astuple(self))
 
-    def rgb(self) -> "RGB":
-        return RGB(*[round(v * 255.0) for v in colorsys.hls_to_rgb(self.h, self.l, self.s)])
+def hls_to_rgb(hls: list):
+    return RGB(*[round(v * 255.0) for v in colorsys.hls_to_rgb(*hls)])
 
 
 @dataclass(unsafe_hash=True)
@@ -172,13 +171,13 @@ class RGB:
             sep += 42.5
 
         if gray:
-            color = 232 + (r + g + b) / 33
+            rgb_color = 232 + (r + g + b) / 33
         else:
-            color = 16 + int(r / 256. * 6) * 36 + \
+            rgb_color = 16 + int(r / 256. * 6) * 36 + \
                 int(g / 256. * 6) * 6 + int(b / 256. * 6)
 
-        c = '38' if foreground else '48'
-        return f'\033[{c};5;{int(color)}m'
+        code = '38' if foreground else '48'
+        return f'\033[{code};5;{int(rgb_color)}m'
 
     def to_ansi_16(self, foreground: bool = True) -> str:
         """
@@ -189,7 +188,7 @@ class RGB:
         raise NotImplementedError()
 
     def to_ansi(self, mode: AnsiMode | None = None, foreground: bool = True):
-        if not mode:
+        if mode is None:
             mode = GLOBAL_CFG.color_mode
         if mode == 'rgb':
             return self.to_ansi_rgb(foreground)
@@ -205,46 +204,43 @@ class RGB:
         :param multiplier: Multiplier
         :return: Lightened color (original isn't modified)
         """
-        return RGB(*redistribute_rgb(*[v * multiplier for v in self]))
-
-    def hsl(self) -> HSL:
-        h, l, s = colorsys.rgb_to_hls(*[v / 255.0 for v in self])
-        return HSL(h, s, l)
+        return RGB(*redistribute_rgb([v * multiplier for v in self]))
 
     def set_light(self, light: float, at_least: bool | None = None,
                   at_most: bool | None = None) -> 'RGB':
         """
-        Set HSL lightness value
+        Set HLS lightness value
 
         :param light: Lightness value (0-1)
         :param at_least: Set the lightness to at least this value (no change if greater)
         :param at_most: Set the lightness to at most this value (no change if lesser)
         :return: New color (original isn't modified)
         """
-        # Convert to HSL
-        hsl = self.hsl()
+        # Convert to HLS
+        hls = rgb_to_hls(self)
 
         # Modify light value
         if at_least is None and at_most is None:
-            hsl.l = light
+            hls[1] = light
         else:
             if at_most:
-                hsl.l = min(hsl.l, light)
+                hls[1] = min(hls[1], light)
             if at_least:
-                hsl.l = max(hsl.l, light)
+                hls[1] = max(hls[1], light)
 
         # Convert back to RGB
-        return hsl.rgb()
+        rgb = hls_to_rgb(hls)
+        return rgb
 
     def is_light(self):
-        return self.hsl().l > 0.5
+        return rgb_to_hls(self)[1] > 0.5
 
-    def overlay(self, color: 'RGB', alpha: float) -> 'RGB':
+    def overlay(self, rgb_color: 'RGB', alpha: float) -> 'RGB':
         """
         Overlay a color on top of this color
 
-        :param color: Overlay color
+        :param rgb_color: Overlay color
         :param alpha: Overlay alpha
         :return: New color (original isn't modified)
         """
-        return RGB(*[round((1 - alpha) * v1 + alpha * v2) for v1, v2 in zip(self, color)])
+        return RGB(*[round((1 - alpha) * v1 + alpha * v2) for v1, v2 in zip(self, rgb_color)])
