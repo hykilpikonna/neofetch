@@ -40,7 +40,6 @@ flag_im = Image.new('RGB', (FLAG_WIDTH, total_flag_height))
 for i, flag in enumerate(flag_list):
     tmp_im = get_flag(flag, FLAG_WIDTH, FLAG_HEIGHT)
     flag_im.paste(tmp_im, (0, i*FLAG_HEIGHT))
-print(flag_im.size)
 
 
 def key_pressed():
