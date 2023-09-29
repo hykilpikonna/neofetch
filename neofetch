@@ -1161,7 +1161,7 @@ get_distro() {
             elif type -p lsb_release >/dev/null; then
                 # Debian does not include .x versions in /etc/os-version, but does in debian_version
                 # So if that file exists, and we are not *buntu, build name from there
-                if [[ -f /etc/debian_version ]] && [[ $distro_shorthand -ne *"buntu"* ]]; then
+                if [[ -f /etc/debian_version ]] && [[ $distro_shorthand != *"buntu"* ]]; then
                     . /etc/os-release
                     case $distro_shorthand in
                         on)   distro="${NAME}" ;;
