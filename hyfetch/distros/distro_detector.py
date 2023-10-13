@@ -88,13 +88,9 @@ def detect(name: str) -> AsciiArt | None:
         from .antix import antix
         return antix
     
-    if name.startswith('aosc os/retro'):
-        from .aosc_os_retro import aosc_os_retro
-        return aosc_os_retro
-    
-    if name == 'aoscosretro_small':
-        from .aoscosretro_small import aoscosretro_small
-        return aoscosretro_small
+    if name.startswith('afterglow'):
+        from .afterglow import afterglow
+        return afterglow
     
     if name.startswith('aosc os'):
         from .aosc_os import aosc_os
@@ -159,6 +155,10 @@ def detect(name: str) -> AsciiArt | None:
     if name.startswith('archmerge'):
         from .archmerge import archmerge
         return archmerge
+    
+    if name.startswith('aeros'):
+        from .aeros import aeros
+        return aeros
     
     if name.startswith('arch'):
         from .arch import arch
@@ -440,6 +440,10 @@ def detect(name: str) -> AsciiArt | None:
         from .elive import elive
         return elive
     
+    if name.startswith('endeavouros_small'):
+        from .endeavouros_small import endeavouros_small
+        return endeavouros_small
+    
     if name.startswith('endeavouros'):
         from .endeavouros import endeavouros
         return endeavouros
@@ -652,9 +656,9 @@ def detect(name: str) -> AsciiArt | None:
         from .kubuntu import kubuntu
         return kubuntu
     
-    if name.startswith('lede'):
-        from .lede import lede
-        return lede
+    if name.startswith('lainos'):
+        from .lainos import lainos
+        return lainos
     
     if name == 'langitketujuh_old':
         from .langitketujuh_old import langitketujuh_old
@@ -1403,6 +1407,10 @@ def detect(name: str) -> AsciiArt | None:
     if name.startswith('zorin'):
         from .zorin import zorin
         return zorin
+    
+    if name.startswith('xenia'):
+        from .xenia import xenia
+        return xenia
     
     if name.endswith('bsd'):
         from .bsd import bsd
