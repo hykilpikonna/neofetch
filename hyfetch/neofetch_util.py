@@ -440,5 +440,6 @@ fore_back = {
     'ubuntu-mate': (2, 1),
     'ubuntu-studio': (2, 1),
     'ubuntu-sway': (2, 1),
+    'xenia': (2, 1),
 }
 
