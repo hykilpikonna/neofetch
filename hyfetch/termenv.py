@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import os
-import platform
 import sys
-
+import platform
 from .color_util import RGB, AnsiMode
 
 
@@ -24,17 +23,17 @@ def unix_detect_ansi_mode() -> AnsiMode | None:
     term = os.environ.get('TERM')
     color_term = os.environ.get('COLORTERM')
 
-    if color_term == 'truecolor' or color_term == '24bit':
+    if color_term in ('truecolor', '24bit'):
         if term.startswith('screen') and os.environ.get('TERM_PROGRAM') != 'tmux':
             return '8bit'
         return 'rgb'
 
-    elif color_term == 'true' or color_term == 'yes':
+    if color_term in ('true', 'yes'):
         return '8bit'
 
     if term == 'xterm-kitty':
         return 'rgb'
-    elif term == 'linux':
+    if term == 'linux':
         return 'ansi'
 
     if '256color' in term:
@@ -87,38 +86,38 @@ def detect_ansi_mode() -> AnsiMode | None:
 
 
 def unix_read_osc(seq: int) -> str:
-    import termios
     import tty
     import signal
+    import termios
     from select import select
-
     # screen/tmux can't support OSC, because they can be connected to multiple
     # terminals concurrently.
     term = os.environ.get('TERM')
     if term.startswith("screen") or term.startswith("tmux"):
         raise OSCException("Screen/tmux not supported")
 
-    t = sys.stdout
-    if not t.isatty():
+    term = sys.stdout
+    if not term.isatty():
         raise OSCException("Not a tty")
 
-    fd = sys.stdin.fileno()
+    file_desc = sys.stdin.fileno()
 
     # Set raw mode
-    settings = termios.tcgetattr(fd)
+    settings = termios.tcgetattr(file_desc)
     tty.setraw(sys.stdin.fileno())
 
     # first, send OSC query, which is ignored by terminal which do not support it
-    t.write(f"\x1b]{seq};?\x1b\\")
-    t.flush()
+    term.write(f"\x1b]{seq};?\x1b\\")
+    term.flush()
 
     # stdin response timeout should be higher for ssh sessions
-    timeout = 0.05 if (os.environ.get('SSH_TTY') or os.environ.get('SSH_SESSION')) is None else 0.5
+    timeout = 0.05 if (os.environ.get('SSH_TTY')
+                       or os.environ.get('SSH_SESSION')) is None else 0.5
 
     # Wait for input to appear
     if not select([sys.stdin], [], [], timeout)[0]:
         # Reset terminal back to normal mode (previously set to raw mode)
-        termios.tcsetattr(fd, termios.TCSADRAIN, settings)
+        termios.tcsetattr(file_desc, termios.TCSADRAIN, settings)
         raise OSCException("No response received")
 
     # Read until termination, or if it doesn't terminate, read until 1 second passes
@@ -139,7 +138,7 @@ def unix_read_osc(seq: int) -> str:
         pass
 
     # Reset terminal back to normal mode (previously set to raw mode)
-    termios.tcsetattr(fd, termios.TCSADRAIN, settings)
+    termios.tcsetattr(file_desc, termios.TCSADRAIN, settings)
 
     # Validate output
     if not code:
@@ -157,13 +156,13 @@ def unix_read_osc(seq: int) -> str:
 
 def get_background_color() -> RGB | None:
     system = platform.system().lower()
+    if system.startswith("windows"):
+        return None
     if system.startswith("linux") or system.startswith("darwin"):
         try:
             osc = unix_read_osc(11).lstrip("rgb:")
-            return RGB.from_hex(''.join([v[:2] for v in osc.split('/')]))
-        except Exception:
+        except OSCException:
             return None
-    if system.startswith("windows"):
-        return None
-
-
+        background_color = RGB.from_hex(
+            ''.join([v[:2] for v in osc.split('/')]))
+        return background_color

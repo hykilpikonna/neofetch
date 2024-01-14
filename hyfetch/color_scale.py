@@ -1,8 +1,9 @@
 """
 This version of color_scale is a special version made without numpy dependency. The numpy version
-would be faster, but numpy is 11 MB large. In comparison, hyfetch 1.0.7 is only 105 kB, so it's not
+would be faster, but numpy is 11 MB. In comparison, hyfetch 1.0.7 is only 105 kB, so it's not
 a good idea to depend on numpy.
 """
+
 from __future__ import annotations
 
 from .color_util import RGB
@@ -26,15 +27,14 @@ def create_gradient(colors: list[RGB], resolution: int) -> list[RGB]:
 
     # Create gradient mapping
     for i in range(len(colors) - 1):
-        c1 = colors[i]
-        c2 = colors[i + 1]
-        bi = i * resolution
+        color_1 = colors[i]
+        color_2 = colors[i + 1]
 
-        for ri in range(resolution):
-            ratio = ri / resolution
-            r = int(c2.r * ratio + c1.r * (1 - ratio))
-            g = int(c2.g * ratio + c1.g * (1 - ratio))
-            b = int(c2.b * ratio + c1.b * (1 - ratio))
+        for point in range(resolution):
+            ratio = point / resolution
+            r = int(color_2.r * ratio + color_1.r * (1 - ratio))
+            g = int(color_2.g * ratio + color_1.g * (1 - ratio))
+            b = int(color_2.b * ratio + color_1.b * (1 - ratio))
             result.append(RGB(r, g, b))
 
     return result
@@ -54,12 +54,16 @@ def get_raw(gradient: list[RGB], ratio: float) -> RGB:
 
 
 class Scale:
+    """
+    A simple color scale using linear interpolation
+    """
     colors: list[RGB]
     rgb: list[RGB]
 
     def __init__(self, scale: list[str], resolution: int = 300):
+        self.resolution = resolution
         self.colors = [RGB.from_hex(s) for s in scale]
-        self.rgb = create_gradient(self.colors, resolution)
+        self.rgb = create_gradient(self.colors, self.resolution)
 
     def __call__(self, ratio: float) -> RGB:
         """
@@ -67,8 +71,19 @@ class Scale:
         """
         return get_raw(self.rgb, ratio)
 
+    def __len__(self):
+        return self.resolution
+
 
 def test_color_scale():
+    """
+    Display a gradient
+
+    Returns
+    -------
+    None.
+
+    """
     scale = Scale(['#232323', '#4F1879', '#B43A78', '#F98766', '#FCFAC0'])
 
     colors = 100

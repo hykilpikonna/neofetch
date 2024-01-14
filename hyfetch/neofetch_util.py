@@ -8,7 +8,6 @@ import shutil
 import subprocess
 import sys
 import zipfile
-from dataclasses import dataclass
 from pathlib import Path
 from subprocess import check_output
 from tempfile import TemporaryDirectory
@@ -16,12 +15,12 @@ from typing import Iterable
 
 import pkg_resources
 
-from .color_util import color, printc
+from .color_util import RGB, color, printc
 from .constants import GLOBAL_CFG, MINGIT_URL, IS_WINDOWS
 from .distros import distro_detector
-from .presets import ColorProfile
-from .serializer import from_dict
-from .types import BackendLiteral, ColorAlignMode
+from .types import BackendLiteral
+
+from .flag_utils import get_flag
 
 RE_NEOFETCH_COLOR = re.compile('\\${c[0-9]}')
 
@@ -70,17 +69,6 @@ def literal_input(prompt: str, options: Iterable[str], default: str, show_ops: b
     return find_selection(selection)
 
 
-def term_size() -> tuple[int, int]:
-    """
-    Get terminal size
-    :return:
-    """
-    try:
-        return os.get_terminal_size().columns, os.get_terminal_size().lines
-    except Exception:
-        return 100, 20
-
-
 def ascii_size(asc: str) -> tuple[int, int]:
     """
     Get distro ascii width, height ignoring color code
@@ -93,10 +81,10 @@ def ascii_size(asc: str) -> tuple[int, int]:
 
 def normalize_ascii(asc: str) -> str:
     """
-    Make sure every line are the same width
+    Make sure every line is the same width
     """
     w = ascii_size(asc)[0]
-    return '\n'.join(line + ' ' * (w - ascii_size(line)[0]) for line in asc.split('\n'))
+    return '\n'.join(line.ljust(w) for line in asc.split('\n'))
 
 
 def fill_starting(asc: str) -> str:
@@ -119,66 +107,70 @@ def fill_starting(asc: str) -> str:
     return '\n'.join(new)
 
 
-@dataclass
-class ColorAlignment:
-    mode: ColorAlignMode
+def recolor_ascii(asc: str, flag: str, lightness: float = 0.5, lightness_mode: str = "set_dl",
+                  foreground: bool = True, rotation: int = 0,
+                  term: str = 'dark') -> str:
+    """
+    Use the color alignment to recolor an ascii art
+    """
+    asc = fill_starting(asc)
+    # Remove existing colors
+    asc = re.sub(RE_NEOFETCH_COLOR, '', asc)
 
-    # custom_colors[ascii color index] = unique color index in preset
-    custom_colors: dict[int, int] = ()
-
-    # Foreground/background ascii color index
-    fore_back: tuple[int, int] = ()
-
-    @classmethod
-    def from_dict(cls, d: dict):
-        return from_dict(cls, d)
-
-    def recolor_ascii(self, asc: str, preset: ColorProfile) -> str:
-        """
-        Use the color alignment to recolor an ascii art
-
-        :return Colored ascii, Uncolored lines
-        """
-        asc = fill_starting(asc)
-
-        if self.fore_back and self.mode in ['horizontal', 'vertical']:
-            fore, back = self.fore_back
-
-            # Replace foreground colors
-            asc = asc.replace(f'${{c{fore}}}', color('&0' if GLOBAL_CFG.is_light else '&f'))
-            lines = asc.split('\n')
-
-            # Add new colors
-            if self.mode == 'horizontal':
-                colors = preset.with_length(len(lines))
-                asc = '\n'.join([l.replace(f'${{c{back}}}', colors[i].to_ansi()) + color('&~&*') for i, l in enumerate(lines)])
-            else:
-                raise NotImplementedError()
-
-            # Remove existing colors
-            asc = re.sub(RE_NEOFETCH_COLOR, '', asc)
-
-        elif self.mode in ['horizontal', 'vertical']:
-            # Remove existing colors
-            asc = re.sub(RE_NEOFETCH_COLOR, '', asc)
-            lines = asc.split('\n')
-
-            # Add new colors
-            if self.mode == 'horizontal':
-                colors = preset.with_length(len(lines))
-                asc = '\n'.join([colors[i].to_ansi() + l + color('&~&*') for i, l in enumerate(lines)])
-            else:
-                asc = '\n'.join(preset.color_text(line) + color('&~&*') for line in lines)
-
+    # Get image array
+    lines = asc.split('\n')
+    x_len = max(len(line) for line in lines)
+    y_len = len(lines)
+    asc = normalize_ascii(asc)
+    img = get_flag(flag, x_len, y_len, rotation=rotation)
+    # Bold
+    new_asc = color("&l\033[1m")
+    current_color = ''
+    x = 0
+    y = 0
+    # Color
+    if lightness_mode == "set_dl":
+        if term.lower() == 'dark':
+            at_least, at_most = (True, None)
         else:
-            preset = preset.unique_colors()
+            at_least, at_most = (None, True)
 
-            # Apply colors
-            color_map = {ai: preset.colors[pi].to_ansi() for ai, pi in self.custom_colors.items()}
-            for ascii_i, c in color_map.items():
-                asc = asc.replace(f'${{c{ascii_i}}}', c)
+    for char in asc:
+        if char == '\n':
+            # Clear
+            new_asc += color('&~&*')
+            new_asc += '\n'
+            new_asc += color("&l\033[1m")
+            current_color = ''
+            continue
+        if x == x_len:
+            x = 0
+            y += 1
 
-        return asc
+        rgb_color = RGB(*img.getpixel((x, y)))
+        if lightness_mode == "set_dl":
+            rgb_color = rgb_color.set_light(lightness, at_least, at_most)
+        elif lightness_mode == "set_raw":
+            rgb_color = rgb_color.set_light(lightness, None, None)
+        elif lightness_mode == "scale":
+            rgb_color = rgb_color.lighten(lightness)
+        elif lightness_mode is None:
+            pass
+        else:
+            raise NotImplementedError(
+                "lightness_mode must be either set_dl, set_raw, scale, or None")
+        color_str = rgb_color.to_ansi(foreground=foreground)
+        if color_str != current_color and (char != ' ' or not foreground):
+            new_asc += color_str
+            current_color = color_str
+        new_asc += char
+
+        x += 1
+
+    # Unbold + clear
+    new_asc += color("&l\033[22m")
+    new_asc += color('&~&*')
+    return new_asc
 
 
 def if_file(f: str | Path) -> Path | None:
@@ -210,7 +202,7 @@ def get_command_path() -> str:
 
         if not pth:
             printc("&cError: Neofetch script cannot be found")
-            exit(127)
+            sys.exit(127)
 
         return str(pth)
 
@@ -235,7 +227,7 @@ def ensure_git_bash() -> Path:
             pth = Path(git_exe).parent
             if (pth / r'bash.exe').is_file():
                 return pth / r'bash.exe'
-            elif (pth / r'bin\bash.exe').is_file():
+            if (pth / r'bin\bash.exe').is_file():
                 return pth / r'bin\bash.exe'
 
         # Find installation in PATH (C:\Program Files\Git\cmd should be in path)
@@ -261,8 +253,7 @@ def ensure_git_bash() -> Path:
                 zip_ref.extractall(path)
             print('Done!')
             return path / r'bin\bash.exe'
-        else:
-            sys.exit()
+        sys.exit()
 
 
 def check_windows_cmd():
@@ -296,8 +287,7 @@ def run_neofetch_cmd(args: str, pipe: bool = False) -> str | None:
 
     if pipe:
         return check_output(full_cmd).decode().strip()
-    else:
-        subprocess.run(full_cmd)
+    subprocess.run(full_cmd)
 
 
 def get_distro_ascii(distro: str | None = None) -> str:
@@ -441,4 +431,3 @@ fore_back = {
     'ubuntu-studio': (2, 1),
     'ubuntu-sway': (2, 1),
 }
-

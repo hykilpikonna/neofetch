@@ -37,8 +37,8 @@ setup(
     include_package_data=True,
     install_requires=[
         # Universal dependencies
-        'setuptools', 'typing_extensions',
-        
+        'setuptools', 'typing_extensions', 'Pillow',
+
         # Windows dependencies
         'psutil ; platform_system=="Windows"',
         'colorama>=0.4.6 ; platform_system=="Windows"',

@@ -43,12 +43,12 @@ request on the repo and our Travis.ci hook will run ShellCheck for you.
 - Don’t use GNU conventions in commands.
     - Use POSIX arguments and flags.
 - Don’t use `cut`.
-    - Use `bash`'s built-in [parameter expansion](http://wiki.bash-hackers.org/syntax/pe).
+    - Use `bash`'s built-in [parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
 - Don’t use `echo`.
     - Use `printf "%s\n"`
 - Don’t use `bc`.
 - Don’t use `sed`.
-    - Use `bash`'s built-in [parameter expansion](http://wiki.bash-hackers.org/syntax/pe).
+    - Use `bash`'s built-in [parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
 - Don’t use `cat`.
     - Use `bash`'s built-in syntax (`file="$(< /path/to/file.txt)")`).
 - Don’t use `grep "pattern" | awk '{ printf }'`.

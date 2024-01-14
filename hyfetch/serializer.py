@@ -44,5 +44,19 @@ def json_stringify(obj: object, indent: int | None = None) -> str:
     return json.dumps(obj, indent=indent, cls=EnhancedJSONEncoder, ensure_ascii=False)
 
 
-def from_dict(cls, d: dict):
-    return cls(**{k: v for k, v in d.items() if k in inspect.signature(cls).parameters})
+def from_dict(cls, _dict: dict):
+    """
+    Load class from dict
+
+    Parameters
+    ----------
+    _dict : dict
+        Dictionary to load from.
+
+    Returns
+    -------
+    cls
+        Class with attributes as defined in the dictionary.
+
+    """
+    return cls(**{k: v for k, v in _dict.items() if k in inspect.signature(cls).parameters})
