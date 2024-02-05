@@ -657,4 +657,15 @@ PRESETS: dict[str, ColorProfile] = {
         '#7D3829',
         '#F3A26A',
     ]),
+
+    'map': ColorProfile([
+        '#5CA0D2',
+        '#9ED3DF',
+        '#F4F493',
+        '#FFFFFF',
+        '#FFFFFF',
+        '#F4F493',
+        '#FFB8C5',
+        '#CC5D7E',
+    ]),
 }
