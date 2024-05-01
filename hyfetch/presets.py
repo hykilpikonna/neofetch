@@ -721,6 +721,15 @@ PRESETS: dict[str, ColorProfile] = {
         '#D2F2E2',
     ]),
 
+    # polyamorous flag colors pulled from https://polyamproud.com/flag
+    'polyam' : ColorProfile([
+        "#FFFFFF",
+        "#FCBF00",
+        "#009FE3",
+        "#E50051",
+        "#340C46",
+    ]),
+
     # Meme flags
     'beiyang': ColorProfile([
         '#DF1B12',
