@@ -124,7 +124,9 @@ pip install git+https://github.com/hykilpikonna/hyfetch.git@master
 ```
 
 <!-- CHANGELOG STARTS HERE --->
+### 1.4.12 
 
+* 🌈 Added the polyamorous flag (No request added.)
 ### 1.4.11
 
 * 🌈 Add ability to set backend args in hyfetch config file ([#181](https://github.com/hykilpikonna/hyfetch/pull/181))
