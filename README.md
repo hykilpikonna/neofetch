@@ -124,6 +124,9 @@ pip install git+https://github.com/hykilpikonna/hyfetch.git@master
 ```
 
 <!-- CHANGELOG STARTS HERE --->
+### 1.4.13
+
+* 🌈 Added the following pride flags: Intersex, Progress, Intersex Progress, Genderflux, Equal Rights, Drag Pride, Androgyne, Old Polyamory
 ### 1.4.12 
 
 * 🌈 Added the polyamorous flag (No request added.)
