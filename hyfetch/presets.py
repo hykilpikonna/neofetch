@@ -687,4 +687,14 @@ PRESETS: dict[str, ColorProfile] = {
         '#7D3829',
         '#F3A26A',
     ]),
+
+    # https://en.wikipedia.org/wiki/Straight_flag
+    'straight': ColorProfile([
+        '#000000',
+        '#FFFFFF',
+        '#000000',
+        '#FFFFFF',
+        '#000000',
+        '#FFFFFF',
+    ]),
 }
