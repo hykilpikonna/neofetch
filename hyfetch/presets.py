@@ -730,6 +730,93 @@ PRESETS: dict[str, ColorProfile] = {
         "#340C46",
     ]),
 
+    'sapphic' : ColorProfile([
+        "#FD8BA8",
+        "#FBF2FF",
+        "#C76BC5",
+        "#FDD768",
+    ]),
+
+    'androgyne' : ColorProfile([
+        "#FE007F",
+        "#9832FF",
+        "#00B8E7",
+    ]),
+
+    "genderflux" : ColorProfile([
+        "#F57694",
+        "#F2A3B9",
+        "#CFCFCF",
+        "#7BE1F5",
+        "#3ECDFA",
+        "#FFF48C",
+    ]),
+
+    'interprogress' : ColorProfile([
+        "#FFD800",
+        "#7902AA",
+        "#FFFFFF",
+        "#FFAFC8",
+        "#74D7EE",
+        "#613915",
+        "#000000",
+        '#E50000',
+        '#FF8D00',
+        '#FFEE00',
+        '#028121',
+        '#004CFF',
+        '#770088'
+    ]),
+
+    'progress' : ColorProfile ([
+        "#FFFFFF",
+        "#FFAFC8",
+        "#74D7EE",
+        "#613915",
+        "#000000",
+        '#E50000',
+        '#FF8D00',
+        '#FFEE00',
+        '#028121',
+        '#004CFF',
+        '#770088'
+    ]),
+
+    'intersex' : ColorProfile([
+        "#FFD800",
+        "#FFD800",
+        "#7902AA",
+        "#FFD800",
+        "#FFD800"
+    ]),
+
+    'old-polyam' : ColorProfile([
+        "#0000FF",
+        "#FF0000",
+        "#FFFF00",
+        "#FF0000",
+        "#000000"
+    ]),
+
+    'equal-rights' : ColorProfile([
+        "#0000FF",
+        "#0000FF",
+        "#FFFF00",
+        "#0000FF",
+        "#0000FF",
+        "#FFFF00",
+        "#0000FF",
+        "#0000FF"
+    ]),
+
+    'drag' : ColorProfile([
+        "#CC67FF",
+        "#FFFFFF",
+        "#FFA3E3",
+        "#FFFFFF",
+        "#3366FF"
+    ]),
+
     # Meme flags
     'beiyang': ColorProfile([
         '#DF1B12',
