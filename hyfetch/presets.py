@@ -664,6 +664,9 @@ PRESETS: dict[str, ColorProfile] = {
         "#FBF2FF",
         "#C76BC5",
         "#FDD768",
+	"#C76BC5",
+	"#FBF2FF",
+	"#FD8BA8"
     ]),
 
     'androgyne' : ColorProfile([
