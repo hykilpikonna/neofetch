@@ -865,7 +865,7 @@ image_source="auto"
 # Chrom, Cleanjaro, Clear Linux OS, ClearOS, Clover, Cobalt, Condres, Container Linux by CoreOS,
 # CRUX, Crystal Linux, Cucumber, CutefishOS, CuteOS, CyberOS, dahlia, DarkOs, Darwin, Debian,
 # Deepin, DesaOS, Devuan, DietPi, digital UNIX, DracOS, DragonFly, Drauger, Droidian, Elementary,
-# Elive, EncryptOS, EndeavourOS, Endless, Enso, EuroLinux, EvolutionOS, Exherbo, Exodia Predator OS,
+# Elive, EncryptOS, EndeavourOS, Endless, Enso, EuroLinux, EvolutionOS, eweOS, Exherbo, Exodia Predator OS,
 # Fedora, FemboyOS, Feren, Finnix, Floflis, FreeBSD, FreeMiNT, Frugalware, Funtoo, GalliumOS,
 # Garuda, Gentoo, GhostBSD, glaucus, gNewSense, GNOME, GNU, GoboLinux, GrapheneOS, Grombyang, Guix,
 # Haiku, HamoniKR, HarDClanZ, Hash, Huayra, Hybrid, HydroOS, Hyperbola, iglunix, instantOS, Interix,
@@ -1589,8 +1589,8 @@ get_model() {
 
                 case $model in
                     Mac14,15):              "MacBook Air (15-inch, M2, 2023)" ;;
-                    Mac14,14):              "Mac Studio (M2 Max, 2023)" ;;
-                    Mac14,13):              "Mac Studio (M2 Ultra, 2023)" ;;
+                    Mac14,14):              "Mac Studio (M2 Ultra, 2023)" ;;
+                    Mac14,13):              "Mac Studio (M2 Max, 2023)" ;;
                     Mac14,8):               "Mac Pro (2023)" ;;
                     Mac14,6 | Mac14,10):    "MacBook Pro (16-inch, 2023)" ;;
                     Mac14,5 | Mac14,9):     "MacBook Pro (14-inch, 2023)" ;;
@@ -2069,9 +2069,27 @@ get_packages() {
     # OS-independent package managers.
     has pipx  && tot pipx list --short
     has cargo && _cargopkgs="$(cargo install --list | grep -v '^ ')" && tot echo "$_cargopkgs"
-    npm-list() { npm list -g --depth=0 | grep -v -E '.*(\(none\)|npm@).*'; }
-    has npm   && pkgs_h=1 tot npm-list
     has am    && pac "$(am -f --less)"
+
+    # Special case for npm: If has npm, we should list folders under node_modules instead of using npm list.
+    # This is because npm list is very slow (2s)
+    if has npm; then
+        # Try to apply heuristics to find the global directory.
+        if [[ -d /usr/lib/node_modules ]]; then
+            dir /usr/lib/node_modules/*/
+        elif [[ -d /usr/local/lib/node_modules ]]; then
+            dir /usr/local/lib/node_modules/*/
+        else
+            # If neither exist, use npm root -g to get the global directory.
+            # (still ~10x faster than npm list)
+            npm_global=$(npm root -g)
+            [[ -d $npm_global ]] && dir "$npm_global"/*/
+
+            # This may not work in WSL2 (if npm is installed on Windows, not WSL).
+            # However, if npm is not installed on this WSL subsystem, it doesn't really count
+            # as a package manager for this subsystem, so let's ignore this case.
+        fi
+    fi
 
     # OS-specific package managers.
     case $os in
@@ -2150,6 +2168,15 @@ get_packages() {
             # Other (Needs complex command)
             has kpm-pkg && ((packages+=$(kpm  --get-selections | grep -cv deinstall$)))
 
+            nix-user-pkgs() {
+                if [ -d ~/.nix-profile ]; then
+                    nix-store -qR ~/.nix-profile
+                elif [ -d "$XDG_STATE_HOME/nix/profile" ]; then
+                    nix-store -qR "$XDG_STATE_HOME/nix/profile"
+                fi
+                nix-store -qR /etc/profiles/per-user/"$USER"
+            }
+
             # Separate system and user packages
             if [[ $package_separate == on ]]; then
                 has guix && {
@@ -2159,10 +2186,6 @@ get_packages() {
                 }
 
                 has nix-store && {
-                    nix-user-pkgs() {
-                        nix-store -qR ~/.nix-profile
-                        nix-store -qR /etc/profiles/per-user/"$USER"
-                    }
                     manager=nix-system  && tot nix-store -qR /run/current-system/sw
                     manager=nix-user    && tot nix-user-pkgs
                     manager=nix-default && tot nix-store -qR /nix/var/nix/profiles/default
@@ -2184,8 +2207,7 @@ get_packages() {
 
                 has nix-store && {
                     nix-all() {
-                        nix-store -qR ~/.nix-profile
-                        nix-store -qR /etc/profiles/per-user/"$USER"
+                        nix-user-pkgs
                         nix-store -qR /run/current-system/sw
                         nix-store -qR /nix/var/nix/profiles/default
                     }
@@ -6503,7 +6525,7 @@ ASCII:
                                 CutefishOS, CuteOS, CyberOS, dahlia, DarkOs, Darwin, Debian, Deepin,
                                 DesaOS, Devuan, DietPi, digital UNIX, DracOS, DragonFly, Drauger,
                                 Droidian, Elementary, Elive, EncryptOS, EndeavourOS, Endless, Enso,
-                                EuroLinux, EvolutionOS, Exherbo, Exodia Predator OS, Fedora,
+                                EuroLinux, EvolutionOS, eweOS, Exherbo, Exodia Predator OS, Fedora,
                                 FemboyOS, Feren, Finnix, Floflis, FreeBSD, FreeMiNT, Frugalware,
                                 Funtoo, GalliumOS, Garuda, Gentoo, GhostBSD, glaucus, gNewSense,
                                 GNOME, GNU, GoboLinux, GrapheneOS, Grombyang, Guix, Haiku, HamoniKR,
@@ -9611,6 +9633,27 @@ ${c1}\e[1;32m      dddddddddddddddddddddddd
   dddd:.'''  '''''''''''''''  dddd:
      dddddddddddddddddddddddddd;;'
       '''''''''''''''''''''''''\e[0m
+EOF
+        ;;
+
+        "eweOS"*)
+            set_colors 7 11 9 8 1
+            read -rd '' ascii_data <<'EOF'
+${c2}           #####%%%                     
+${c2}        ##%%${c3}////${c2}%%%%%${c3}///                
+${c2}       #%%%%${c3}////((((////${c2}%               
+${c1}    *@@@@@@@${c3}/${c5},,,${c3}/////${c5},,,${c2}%${c1}@@@@@@@        
+${c1}  .@@@@@@@@@@@${c3}////////${c2}%%%${c1}@@@@@@@@@@@@   
+${c1} @@@${c4}...${c1}@@@@@@${c3}////${c2}%%${c3}////${c1}@@@@@@@@@@@@@@@@ 
+${c1} @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+${c1} @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+${c1}   @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+${c1}         @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+${c1}          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
+${c1}           @@@@@@@@@@@@@@@@@@@@@@@@@@@  
+${c1}             @@@@@@@@@@@@@@@@@@@@@@@    
+${c1}              @@@@@@         @@@@@@     
+${c1}                @@@           @@@       
 EOF
         ;;
 

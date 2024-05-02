@@ -31,6 +31,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     packages=find_namespace_packages(),
     package_data={'hyfetch': ['hyfetch/*']},

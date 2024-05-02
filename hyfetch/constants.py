@@ -31,6 +31,7 @@ IS_WINDOWS = platform.system() == 'Windows'
 
 CACHE_PATH = Path(os.getenv("LOCALAPPDATA") or os.getenv("XDG_CACHE_HOME") or Path.home() / '.cache') / 'hyfetch'
 
+
 @dataclass
 class GlobalConfig:
     # Global color mode default to 8-bit for compatibility
@@ -49,6 +50,4 @@ class GlobalConfig:
         return 0.65 if term.lower() == 'dark' else 0.4
 
 
-GLOBAL_CFG = GlobalConfig(color_mode='8bit', override_distro=None, debug=False, is_light=False, use_overlay=False)
-
-GIT_URL = 'https://github.com/git-for-windows/git/releases/download/v2.37.2.windows.2/Git-2.37.2.2-32-bit.tar.bz2'
+GLOBAL_CFG = GlobalConfig(color_mode='8bit', override_distro=None, debug=False, is_light=False, use_overlay=True)
