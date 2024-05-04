@@ -721,6 +721,7 @@ PRESETS: dict[str, ColorProfile] = {
         '#D2F2E2',
     ]),
 
+    # Start of Extras by Jaida Corvera
     # polyamorous flag colors pulled from https://polyamproud.com/flag
     'polyam' : ColorProfile([
         "#FFFFFF",
@@ -818,6 +819,47 @@ PRESETS: dict[str, ColorProfile] = {
         "#FFA3E3",
         "#FFFFFF",
         "#3366FF"
+    ]),
+
+    # Pronoun Flags
+
+    'pronounfluid' : ColorProfile([
+        "#ffb3f9",
+        "#ffffff",
+        "#d1fdcb",
+        "#c7b0ff",
+        "#000000",
+        "#b8ccff"
+    ]),
+
+    'pronounflux' : ColorProfile([
+        "#fdb3f8",
+        "#b6ccfa",
+        "#18ddd3",
+        "#64ff89",
+        "#ff7690",
+        "#ffffff"
+    ]),
+
+    'exipronoun' : ColorProfile([
+        "#1c3d34",
+        "#ffffff",
+        "#321848",
+        "#000000"
+    ]),
+
+    'neopronoun' : ColorProfile ([
+        "#bcec64",
+        "#ffffff",
+        "#38077a"
+    ]),
+
+    'neofluid' : ColorProfile ([
+        "#ffeca0",
+        "#ffffff",
+        "#ffeca0",
+        "#38087a",
+        "#bcec64"
     ]),
 
     # Meme flags
