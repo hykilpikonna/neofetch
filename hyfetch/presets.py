@@ -679,6 +679,16 @@ PRESETS: dict[str, ColorProfile] = {
         '#636363',
     ]),
 
+    # sampled from https://hypersexuality.fandom.com/wiki/Hypersexual_Flag?file=Hypersexual_Flag_By_plurgai.png
+     'hypersexuall': ColorProfile([
+        '#070102',
+        '#EF2047',
+        '#F9B8D2',
+        '#EB6297',
+        '#EE376A',
+        '#000000',
+    ]),
+
     # Meme flags
     'beiyang': ColorProfile([
         '#DF1B12',
