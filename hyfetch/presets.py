@@ -791,6 +791,15 @@ PRESETS: dict[str, ColorProfile] = {
         "#bcec64"
     ]),
 
+    'genderqueer' : ColorProfile ([
+        "#b57edc",
+        "#b57edc",
+        "#ffffff",
+        "#ffffff",
+        "#4a8123",
+        "#4a8123"
+    ]),
+
     # Meme flags
     'beiyang': ColorProfile([
         '#DF1B12',
