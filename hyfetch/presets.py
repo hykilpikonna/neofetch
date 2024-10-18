@@ -182,6 +182,26 @@ PRESETS: dict[str, ColorProfile] = {
         '#55CDFD'
     ]),
 
+   'map': ColorProfile([
+        '#5DA0D3',
+        '#9ED3DF',
+        '#F5F593',
+        '#FFFEFE',
+        '#FFFEFE',
+        '#F5F593',
+        '#FEB8C4',
+        '#CC5C7F'
+    ]),
+
+    'aam': ColorProfile([
+        '#52006E',
+        '#7C0062',
+        '#E06697',
+        '#CEBDE1',
+        '#2246DA',
+        '#3E2688'
+    ]),
+
     'nonbinary': ColorProfile([
         '#FCF431',
         '#FCFCFC',
