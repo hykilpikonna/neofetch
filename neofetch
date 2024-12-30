@@ -2183,7 +2183,7 @@ get_packages() {
             has evox       && tot cat /var/evox/packages/DB
             has squirrel   && tot ls -w 1 /var/packages
             has anise      && tot anise s --installed
-            has am         && pac "$(am -f --less)"
+            has am         && pac "$(am -f --less | awk '{ SUM += $1} END { print SUM }')"
             # Bonsai refers to the now archived repo https://github.com/mitchweaver/bonsai
             has bonsai     && tot bonsai list
             # Rad refers to https://github.com/glaucuslinux/rad
