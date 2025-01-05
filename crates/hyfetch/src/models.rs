@@ -9,6 +9,7 @@ use crate::types::{AnsiMode, Backend, TerminalTheme};
 pub struct Config {
     pub preset: Preset,
     pub mode: AnsiMode,
+    pub auto_detect_light_dark: Option<bool>,
     pub light_dark: TerminalTheme,
     pub lightness: Option<Lightness>,
     pub color_align: ColorAlignment,

@@ -94,7 +94,11 @@ fn main() -> Result<()> {
     };
 
     let color_mode = options.mode.unwrap_or(config.mode);
-    let theme = config.light_dark;
+    let theme = if config.auto_detect_light_dark.unwrap_or(false) {
+        det_bg()?.map(|bg| bg.theme()).unwrap_or(config.light_dark)
+    } else {
+        config.light_dark
+    };
 
     // Check if it's June (pride month)
     let now =
@@ -242,7 +246,7 @@ fn create_config(
 
     let asc = get_distro_ascii(distro, backend).context("failed to get distro ascii")?;
     let asc = asc.to_normalized().context("failed to normalize ascii")?;
-    let theme = det_bg.map(|bg| bg.theme()).unwrap_or(TerminalTheme::Light);
+    let theme = det_bg.map(|bg| bg.theme()).unwrap_or_default();
     let color_mode = det_ansi.unwrap_or(AnsiMode::Ansi256);
     let mut title = format!(
         "Welcome to {logo} Let's set up some colors first.",
@@ -1015,6 +1019,7 @@ fn create_config(
         preset,
         mode: color_mode,
         light_dark: theme,
+        auto_detect_light_dark: Some(det_bg.is_some()),
         lightness: Some(lightness),
         color_align,
         backend,

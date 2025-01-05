@@ -36,6 +36,12 @@ pub enum TerminalTheme {
     Dark,
 }
 
+impl Default for TerminalTheme {
+    fn default() -> Self {
+        Self::Light
+    }
+}
+
 #[derive(
     Copy,
     Clone,
