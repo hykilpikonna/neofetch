@@ -194,6 +194,22 @@ fn load_config(path: &PathBuf) -> Result<Option<Config>> {
     Ok(Some(config))
 }
 
+fn det_bg() -> Result<Option<Srgb<u8>>, terminal_colorsaurus::Error> {
+    if !io::stdout().is_terminal() {
+        return Ok(None);
+    }
+
+    background_color(QueryOptions::default())
+        .map(|terminal_colorsaurus::Color { r, g, b }| Some(Srgb::new(r, g, b).into_format()))
+        .or_else(|err| {
+            if matches!(err, terminal_colorsaurus::Error::UnsupportedTerminal) {
+                Ok(None)
+            } else {
+                Err(err)
+            }
+        })
+}
+
 /// Creates config interactively.
 ///
 /// The config is automatically stored to file.
@@ -204,19 +220,7 @@ fn create_config(
     backend: Backend,
     debug_mode: bool,
 ) -> Result<Config> {
-    // Detect terminal environment (doesn't work for all terminal emulators,
-    // especially on Windows)
-    let det_bg = if io::stdout().is_terminal() {
-        match background_color(QueryOptions::default()) {
-            Ok(bg) => Some(Srgb::<u16>::new(bg.r, bg.g, bg.b).into_format::<u8>()),
-            Err(terminal_colorsaurus::Error::UnsupportedTerminal) => None,
-            Err(err) => {
-                return Err(err).context("failed to get terminal background color");
-            },
-        }
-    } else {
-        None
-    };
+    let det_bg = det_bg()?;
     debug!(?det_bg, "detected background color");
     let det_ansi = supports_color::on(supports_color::Stream::Stdout).map(|color_level| {
         #[allow(clippy::if_same_then_else)]
