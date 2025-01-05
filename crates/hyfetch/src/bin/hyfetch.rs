@@ -212,6 +212,7 @@ fn create_config(
     };
     debug!(?det_bg, "detected background color");
     let det_ansi = supports_color::on(supports_color::Stream::Stdout).map(|color_level| {
+        #[allow(clippy::if_same_then_else)]
         if color_level.has_16m {
             AnsiMode::Rgb
         } else if color_level.has_256 {
