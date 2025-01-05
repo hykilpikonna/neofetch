@@ -31,6 +31,7 @@ pub struct Options {
     pub print_font_logo: bool,
     pub test_print: bool,
     pub ask_exit: bool,
+    pub auto_detect_light_dark: bool,
 }
 
 pub fn options() -> OptionParser<Options> {
@@ -170,6 +171,9 @@ BACKEND={{{backends}}}",
         .help("Ask for input before exiting")
         .switch()
         .hide();
+    let auto_detect_light_dark = long("auto-detect-light-dark")
+        .help("Enables hyfetch to detect light/dark terminal background in runtime")
+        .switch();
 
     construct!(Options {
         config,
@@ -188,6 +192,7 @@ BACKEND={{{backends}}}",
         // hidden
         test_print,
         ask_exit,
+        auto_detect_light_dark,
     })
     .to_options()
     .header(
