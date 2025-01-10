@@ -101,9 +101,10 @@ fn main() -> Result<()> {
     };
     let theme = if auto_detect_light_dark {
         let res = det_bg();
-        res?.map(|bg| bg.theme()).unwrap_or(config.light_dark)
+        res?.map(|bg| bg.theme())
+            .unwrap_or(config.light_dark.unwrap_or_default())
     } else {
-        config.light_dark
+        config.light_dark.unwrap_or_default()
     };
 
     // Check if it's June (pride month)
@@ -148,7 +149,12 @@ fn main() -> Result<()> {
     } else if let Some(lightness) = options.lightness {
         color_profile.with_lightness(AssignLightness::Replace(lightness))
     } else {
-        color_profile.with_lightness_adaptive(config.lightness(), theme)
+        color_profile.with_lightness_adaptive(
+            config
+                .lightness
+                .unwrap_or_else(|| Config::default_lightness(theme)),
+            theme,
+        )
     };
     debug!(?color_profile, "lightened color profile");
 
@@ -1024,7 +1030,7 @@ fn create_config(
     let config = Config {
         preset,
         mode: color_mode,
-        light_dark: theme,
+        light_dark: Some(theme),
         auto_detect_light_dark: Some(det_bg.is_some()),
         lightness: Some(lightness),
         color_align,

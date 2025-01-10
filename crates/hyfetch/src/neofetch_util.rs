@@ -3,37 +3,37 @@ use std::ffi::OsStr;
 #[cfg(feature = "macchina")]
 use std::fs;
 use std::io::{self, Write as _};
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 use std::sync::OnceLock;
 use std::{env, fmt};
 
+use crate::ascii::{RawAsciiArt, RecoloredAsciiArt};
+use crate::color_util::{printc, NeofetchAsciiIndexedColor, PresetIndexedColor};
+use crate::distros::Distro;
+use crate::types::{AnsiMode, Backend};
+#[cfg(windows)]
+use crate::utils::find_file;
+use crate::utils::{find_in_path, get_cache_path, input, process_command_status};
 use aho_corasick::AhoCorasick;
+#[cfg(windows)]
+use anyhow::anyhow;
 use anyhow::{Context as _, Result};
 use indexmap::IndexMap;
 use itertools::Itertools as _;
-#[cfg(windows)]
-use anyhow::anyhow;
-#[cfg(windows)]
-use crate::utils::find_file;
-#[cfg(windows)]
-use std::path::Path;
 #[cfg(windows)]
 use normpath::PathExt as _;
 #[cfg(windows)]
 use same_file::is_same_file;
 use serde::{Deserialize, Serialize};
+#[cfg(windows)]
+use std::path::Path;
 use strum::AsRefStr;
 #[cfg(feature = "macchina")]
 use toml_edit::{value, DocumentMut, Item, Table};
 use tracing::debug;
 use unicode_segmentation::UnicodeSegmentation as _;
 use which::which;
-use crate::ascii::{RawAsciiArt, RecoloredAsciiArt};
-use crate::color_util::{printc, NeofetchAsciiIndexedColor, PresetIndexedColor};
-use crate::distros::Distro;
-use crate::types::{AnsiMode, Backend};
-use crate::utils::{find_in_path, get_cache_path, input, process_command_status};
 
 pub const TEST_ASCII: &str = r####################"
 ### |\___/| ###
@@ -170,8 +170,14 @@ pub fn add_pkg_path() -> Result<()> {
     path.extend(to_add.iter().map(|d| PathBuf::from("hyfetch").join(d)));
 
     // Set PATH
-    env::set_var("PATH", env::join_paths(path).context("failed to join paths")?);
-    debug!("Added PyPI package path to PATH, PATH={}", env::var("PATH")?);
+    env::set_var(
+        "PATH",
+        env::join_paths(path).context("failed to join paths")?,
+    );
+    debug!(
+        "Added PyPI package path to PATH, PATH={}",
+        env::var("PATH")?
+    );
 
     Ok(())
 }
@@ -185,7 +191,9 @@ pub fn neofetch_path() -> Result<PathBuf> {
     }
 
     // Instead of doing that, let's write the neofetch script to a temp file
-    let f: PathBuf = get_cache_path().context("Failed to get cache path")?.join("nf_script.sh");
+    let f: PathBuf = get_cache_path()
+        .context("Failed to get cache path")?
+        .join("nf_script.sh");
     let mut file = fs::File::create(&f).context("Failed to create neofetch script file")?;
     file.write_all(NEOFETCH_SCRIPT.as_bytes())
         .context("Failed to write neofetch script to file")?;
@@ -342,14 +350,21 @@ fn bash_path() -> Result<PathBuf> {
             match is_same_file(&bash_path, Path::new(&windir).join(r"System32\bash.exe")) {
                 Ok(false) => return Ok(bash_path),
                 Err(err) if err.kind() == io::ErrorKind::NotFound => return Ok(bash_path),
-                _ => {}
+                _ => {},
             }
         }
     }
 
-    if let Some(bash_path) = find_in_path("git.exe").context("failed to find `git.exe` in `PATH`")? {
+    if let Some(bash_path) =
+        find_in_path("git.exe").context("failed to find `git.exe` in `PATH`")?
+    {
         if bash_path.ends_with(r"Git\cmd\git.exe") {
-            let pth = bash_path.parent().unwrap().parent().unwrap().join(r"bin\bash.exe");
+            let pth = bash_path
+                .parent()
+                .unwrap()
+                .parent()
+                .unwrap()
+                .join(r"bin\bash.exe");
             if pth.is_file() {
                 return Ok(pth);
             }
