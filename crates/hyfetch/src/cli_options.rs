@@ -31,7 +31,7 @@ pub struct Options {
     pub print_font_logo: bool,
     pub test_print: bool,
     pub ask_exit: bool,
-    pub auto_detect_light_dark: bool,
+    pub auto_detect_light_dark: Option<bool>,
 }
 
 pub fn options() -> OptionParser<Options> {
@@ -173,7 +173,8 @@ BACKEND={{{backends}}}",
         .hide();
     let auto_detect_light_dark = long("auto-detect-light-dark")
         .help("Enables hyfetch to detect light/dark terminal background in runtime")
-        .switch();
+        .argument("AUTO_DETECT_LIGHT_DARK")
+        .optional();
 
     construct!(Options {
         config,

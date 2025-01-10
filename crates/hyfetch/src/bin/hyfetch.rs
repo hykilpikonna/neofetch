@@ -94,11 +94,9 @@ fn main() -> Result<()> {
     };
 
     let color_mode = options.mode.unwrap_or(config.mode);
-    let auto_detect_light_dark = if options.auto_detect_light_dark {
-        true
-    } else {
-        config.auto_detect_light_dark.unwrap_or(false)
-    };
+    let auto_detect_light_dark = options
+        .auto_detect_light_dark
+        .unwrap_or_else(|| config.auto_detect_light_dark.unwrap_or(false));
     let theme = if auto_detect_light_dark {
         let res = det_bg();
         res?.map(|bg| bg.theme())
