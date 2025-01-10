@@ -173,7 +173,7 @@ BACKEND={{{backends}}}",
         .hide();
     let auto_detect_light_dark = long("auto-detect-light-dark")
         .help("Enables hyfetch to detect light/dark terminal background in runtime")
-        .argument("AUTO_DETECT_LIGHT_DARK")
+        .argument("BOOL")
         .optional();
 
     construct!(Options {
