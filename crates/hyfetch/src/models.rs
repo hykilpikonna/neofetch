@@ -9,7 +9,8 @@ use crate::types::{AnsiMode, Backend, TerminalTheme};
 pub struct Config {
     pub preset: Preset,
     pub mode: AnsiMode,
-    pub light_dark: TerminalTheme,
+    pub auto_detect_light_dark: Option<bool>,
+    pub light_dark: Option<TerminalTheme>,
     pub lightness: Option<Lightness>,
     pub color_align: ColorAlignment,
     pub backend: Backend,
@@ -30,11 +31,6 @@ impl Config {
                 Lightness::new(0.4).expect("default lightness should not be invalid")
             },
         }
-    }
-
-    pub fn lightness(&self) -> Lightness {
-        self.lightness
-            .unwrap_or_else(|| Self::default_lightness(self.light_dark))
     }
 }
 
