@@ -7,7 +7,7 @@ import importlib.util
 import json
 import random
 import traceback
-from itertools import permutations
+from itertools import permutations, islice
 from math import ceil
 
 from . import termenv, neofetch_util, pride_month
@@ -251,7 +251,7 @@ def create_config() -> Config:
         slots = list(set(map(int, re.findall('(?<=\\${c)[0-9](?=})', asc))))
         while len(pis) < len(slots):
             pis += pis
-        perm = {p[:len(slots)] for p in permutations(pis)}
+        perm = {p[:len(slots)] for p in islice(permutations(pis), 1000)}
         random_count = max(0, ascii_per_row * ascii_rows - len(arrangements))
         if random_count > len(perm):
             choices = perm
@@ -309,7 +309,7 @@ def create_config() -> Config:
         printc('- &bqwqfetch&r: Pure python, &nminimal dependencies&r ' +
                ('&c(Not installed)' if not has_qwqfetch else ''))
         print()
-        
+
         # Use fastfetch as the default backend if it is installed
         def_backend = 'neofetch' if ff_path is None else 'fastfetch'
 
@@ -440,7 +440,7 @@ def run():
         config.backend = args.backend
     if args.args:
         config.args = args.args
-        
+
     # Random preset
     if config.preset == 'random':
         config.preset = random.choice(list(PRESETS.keys()))
