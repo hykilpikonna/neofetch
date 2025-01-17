@@ -214,6 +214,9 @@ pub enum Preset {
     #[strum(serialize = "throatlozenges")]
     ThroatLozenges,
 
+    /// Meme flag
+    Band,
+
     /// Colors from Gilbert Baker's original 1978 flag design
     Baker,
 }
@@ -626,6 +629,11 @@ impl Preset {
             Self::ThroatLozenges => ColorProfile::from_hex_colors(vec![
                 "#2759DA", "#03940D", "#F5F100", "#F59B00", "#B71212",
             ]),
+            
+            Self::Band => ColorProfile::from_hex_colors(vec![
+                "#2670C0", "#F5BD00", "#DC0045", "#E0608E"
+            ]),
+
 
             // used https://gilbertbaker.com/rainbow-flag-color-meanings/ as source and colorpicked
             Self::Baker => ColorProfile::from_hex_colors(vec![
