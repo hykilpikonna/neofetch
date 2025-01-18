@@ -342,7 +342,7 @@ fn bash_path() -> Result<PathBuf> {
             match is_same_file(&bash_path, Path::new(&windir).join(r"System32\bash.exe")) {
                 Ok(false) => return Ok(bash_path),
                 Err(err) if err.kind() == io::ErrorKind::NotFound => return Ok(bash_path),
-                _ => {},
+                _ => {}
             }
         }
     }
