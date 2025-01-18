@@ -170,14 +170,8 @@ pub fn add_pkg_path() -> Result<()> {
     path.extend(to_add.iter().map(|d| PathBuf::from("hyfetch").join(d)));
 
     // Set PATH
-    env::set_var(
-        "PATH",
-        env::join_paths(path).context("failed to join paths")?,
-    );
-    debug!(
-        "Added PyPI package path to PATH, PATH={}",
-        env::var("PATH")?
-    );
+    env::set_var("PATH", env::join_paths(path).context("failed to join paths")?);
+    debug!("Added PyPI package path to PATH, PATH={}", env::var("PATH")?);
 
     Ok(())
 }
@@ -191,9 +185,7 @@ pub fn neofetch_path() -> Result<PathBuf> {
     }
 
     // Instead of doing that, let's write the neofetch script to a temp file
-    let f: PathBuf = get_cache_path()
-        .context("Failed to get cache path")?
-        .join("nf_script.sh");
+    let f: PathBuf = get_cache_path().context("Failed to get cache path")?.join("nf_script.sh");
     let mut file = fs::File::create(&f).context("Failed to create neofetch script file")?;
     file.write_all(NEOFETCH_SCRIPT.as_bytes())
         .context("Failed to write neofetch script to file")?;
@@ -355,16 +347,9 @@ fn bash_path() -> Result<PathBuf> {
         }
     }
 
-    if let Some(bash_path) =
-        find_in_path("git.exe").context("failed to find `git.exe` in `PATH`")?
-    {
+    if let Some(bash_path) = find_in_path("git.exe").context("failed to find `git.exe` in `PATH`")? {
         if bash_path.ends_with(r"Git\cmd\git.exe") {
-            let pth = bash_path
-                .parent()
-                .unwrap()
-                .parent()
-                .unwrap()
-                .join(r"bin\bash.exe");
+            let pth = bash_path.parent().unwrap().parent().unwrap().join(r"bin\bash.exe");
             if pth.is_file() {
                 return Ok(pth);
             }
