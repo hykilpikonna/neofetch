@@ -18,18 +18,15 @@ use hyfetch::color_util::{
     clear_screen, color, printc, ContrastGrayscale as _, ForegroundBackground, Lightness,
     NeofetchAsciiIndexedColor, PresetIndexedColor, Theme as _, ToAnsiString as _,
 };
-use hyfetch::font_logo::get_font_logo;
 use hyfetch::models::Config;
 #[cfg(feature = "macchina")]
 use hyfetch::neofetch_util::macchina_path;
-use hyfetch::neofetch_util::{
-    self, add_pkg_path, fastfetch_path, get_distro_ascii, literal_input, ColorAlignment,
-    NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII,
-};
+use hyfetch::neofetch_util::{self, add_pkg_path, fastfetch_path, get_distro_ascii, literal_input, ColorAlignment, NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII};
 use hyfetch::presets::{AssignLightness, Preset};
 use hyfetch::pride_month;
 use hyfetch::types::{AnsiMode, Backend, TerminalTheme};
 use hyfetch::utils::{get_cache_path, input};
+use hyfetch::font_logo::get_font_logo;
 use indexmap::{IndexMap, IndexSet};
 use itertools::Itertools as _;
 use palette::{LinSrgb, Srgb};
@@ -43,7 +40,7 @@ use tracing::debug;
 
 fn main() -> Result<()> {
     add_pkg_path().expect("failed to add pkg path");
-
+    
     #[cfg(windows)]
     if let Err(err) = enable_ansi_support::enable_ansi_support() {
         debug!(%err, "could not enable ANSI escape code support");
@@ -61,11 +58,7 @@ fn main() -> Result<()> {
     let distro = options.distro.as_ref();
 
     let backend = options.backend.unwrap_or_else(|| {
-        if fastfetch_path().is_ok() {
-            Backend::Fastfetch
-        } else {
-            Backend::Neofetch
-        }
+        if fastfetch_path().is_ok() { Backend::Fastfetch } else { Backend::Neofetch }
     });
 
     if options.test_print {
@@ -886,10 +879,9 @@ fn create_config(
             })
             .collect();
         arrangements.extend(choices.into_iter().enumerate().map(|(i, colors)| {
-            (
-                format!("random{i}").into(),
-                ColorAlignment::Custom { colors },
-            )
+            (format!("random{i}").into(), ColorAlignment::Custom {
+                colors,
+            })
         }));
         let asciis: Vec<Vec<String>> = arrangements
             .iter()

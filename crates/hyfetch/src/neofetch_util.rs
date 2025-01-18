@@ -3,37 +3,37 @@ use std::ffi::OsStr;
 #[cfg(feature = "macchina")]
 use std::fs;
 use std::io::{self, Write as _};
-use std::path::PathBuf;
+use std::path::{PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
 use std::{env, fmt};
 
-use crate::ascii::{RawAsciiArt, RecoloredAsciiArt};
-use crate::color_util::{printc, NeofetchAsciiIndexedColor, PresetIndexedColor};
-use crate::distros::Distro;
-use crate::types::{AnsiMode, Backend};
-#[cfg(windows)]
-use crate::utils::find_file;
-use crate::utils::{find_in_path, get_cache_path, input, process_command_status};
 use aho_corasick::AhoCorasick;
-#[cfg(windows)]
-use anyhow::anyhow;
 use anyhow::{Context as _, Result};
 use indexmap::IndexMap;
 use itertools::Itertools as _;
+#[cfg(windows)]
+use anyhow::anyhow;
+#[cfg(windows)]
+use crate::utils::find_file;
+#[cfg(windows)]
+use std::path::Path;
 #[cfg(windows)]
 use normpath::PathExt as _;
 #[cfg(windows)]
 use same_file::is_same_file;
 use serde::{Deserialize, Serialize};
-#[cfg(windows)]
-use std::path::Path;
 use strum::AsRefStr;
 #[cfg(feature = "macchina")]
 use toml_edit::{value, DocumentMut, Item, Table};
 use tracing::debug;
 use unicode_segmentation::UnicodeSegmentation as _;
 use which::which;
+use crate::ascii::{RawAsciiArt, RecoloredAsciiArt};
+use crate::color_util::{printc, NeofetchAsciiIndexedColor, PresetIndexedColor};
+use crate::distros::Distro;
+use crate::types::{AnsiMode, Backend};
+use crate::utils::{find_in_path, get_cache_path, input, process_command_status};
 
 pub const TEST_ASCII: &str = r####################"
 ### |\___/| ###
