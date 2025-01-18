@@ -704,52 +704,52 @@ PRESETS: dict[str, ColorProfile] = {
     # sourced from https://commons.wikimedia.org/wiki/File:Bear_Brotherhood_flag.svg
     'bear': ColorProfile([
         '#623804',
-	'#D56300',
-	'#FEDD63',
-	'#FEE6B8',
-	'#FFFFFF',
-	'#555555',
+        '#D56300',
+        '#FEDD63',
+        '#FEE6B8',
+        '#FFFFFF',
+        '#555555',
     ]),
 
     # colorpicked from https://commons.wikimedia.org/wiki/File:Butch_Flag.png
     'butch': ColorProfile([
-	'#D72800',
-	'#F17623',
-	'#FF9C56',
-	'#FFFDF6',
-	'#FFCE89',
-	'#FEAF02',
-	'#A37000',
+        '#D72800',
+        '#F17623',
+        '#FF9C56',
+        '#FFFDF6',
+        '#FFCE89',
+        '#FEAF02',
+        '#A37000',
     ]),
 
     # colorpicked from https://commons.wikimedia.org/wiki/File:Leather,_Latex,_and_BDSM_pride_-_Light.svg
     'leather': ColorProfile([
-	'#000000',
-	'#252580',
-	'#000000',
-	'#252580',
-	'#FFFFFF',
-	'#252580',
-	'#000000',
-	'#252580',
-	'#000000',
+        '#000000',
+        '#252580',
+        '#000000',
+        '#252580',
+        '#FFFFFF',
+        '#252580',
+        '#000000',
+        '#252580',
+        '#000000',
     ]),
 
     # colorpicked from https://commons.wikimedia.org/wiki/File:Official_Otter_Pride_Flag_by_Bearbackgear.jpg
     'otter': ColorProfile([
-	'#263881',
-	'#5C9DC9',
-	'#FFFFFF',
-	'#3A291D',
-	'#5C9DC9',
-	'#263881',
+        '#263881',
+        '#5C9DC9',
+        '#FFFFFF',
+        '#3A291D',
+        '#5C9DC9',
+        '#263881',
     ]),
 
     # colorpicked from https://commons.wikimedia.org/wiki/File:Twink_Pride_Flag_(proposed).svg
     'twink': ColorProfile([
-	'#FFB2FF',
-	'#FFFFFF',
-	'#FFFF81',
+        '#FFB2FF',
+        '#FFFFFF',
+        '#FFFF81',
     ]),
 
     'kenochoric': ColorProfile([
@@ -949,11 +949,11 @@ PRESETS: dict[str, ColorProfile] = {
         "#B71212"
     ]),
 
-    'throatlozenges': ColorProfile([
-    "#2670c0",
-    "#f5bd00",
-    "#dc0045",
-    "#e0608e"
+    'band': ColorProfile([
+        "#2670c0",
+        "#f5bd00",
+        "#dc0045",
+        "#e0608e"
     ]),
 
     # colors from Gilbert Baker's original 1978 flag design
