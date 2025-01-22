@@ -38,7 +38,7 @@ pub enum TerminalTheme {
 
 impl Default for TerminalTheme {
     fn default() -> Self {
-        Self::Light
+        Self::Dark
     }
 }
 
