@@ -3176,16 +3176,8 @@ END
 
         "Mac OS X"|"macOS")
             if [[ $osx_version == 10.[4-5]* ]]; then
-                cpu="$(system_profiler SPHardwareDataType | grep CPU\ Type)"
-                cpu="${cpu/CPU\ Type\:/}"
-
-                speed="$(system_profiler SPHardwareDataType | grep CPU\ Speed)"
-                speed="${speed/CPU\ Speed\:/}"
-                speed="${speed/ MHz/}"
-                speed="${speed/ GHz/}"
-
-                cores="$(system_profiler SPHardwareDataType | grep Number\ Of\ CPUs)"
-                cores="${cores/Number\ Of\ CPUs\:/}"
+                cpu="$(system_profiler SPHardwareDataType | grep Processor\ Name)"
+                cpu="${cpu/Processor\ Name\:/}"
             else
                 cpu="$(sysctl -n machdep.cpu.brand_string)"
             fi
@@ -3374,7 +3366,6 @@ END
     cpu="${cpu//[1-9][0-9]-Core}"
     cpu="${cpu//[0-9]-Core}"
     cpu="${cpu//, * Compute Cores}"
-    cpu="${cpu//Core / }"
     cpu="${cpu//(\"AuthenticAMD\"*)}"
     cpu="${cpu//with Radeon*Graphics}"
     cpu="${cpu//, altivec supported}"
