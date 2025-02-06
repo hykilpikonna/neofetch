@@ -3175,11 +3175,10 @@ END
         ;;
 
         "Mac OS X"|"macOS")
-            if [[ $osx_version == 10.[4-5]* ]]; then
+            cpu="$(sysctl -n machdep.cpu.brand_string 2>/dev/null)"
+            if [ -z "$cpu" ]; then
                 cpu="$(system_profiler SPHardwareDataType | grep Processor\ Name)"
                 cpu="${cpu/Processor\ Name\:/}"
-            else
-                cpu="$(sysctl -n machdep.cpu.brand_string)"
             fi
 
             # Get CPU cores.
