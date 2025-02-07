@@ -3673,6 +3673,8 @@ get_memory() {
                 pages_compressed="$(vm_stat | awk '/ occupied/ { printf $5 }')"
                 pages_compressed="${pages_compressed:-0}"
                 mem_used="$(((pages_app + ${pages_wired//.} + ${pages_compressed//.}) * hw_pagesize / 1024))"
+            else
+                return 0
             fi
         ;;
 
