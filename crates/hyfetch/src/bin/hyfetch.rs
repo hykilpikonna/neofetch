@@ -827,7 +827,7 @@ fn create_config(
     let mut asc = asc;
     let mut logo_chosen: Option<String> = distro.cloned(); 
     
-    if small_asc.lines != asc.lines { 
+    if small_asc.lines != asc.lines && running_dst_sml != "" { 
         let ds_arrangements = [
             ("Default", asc.clone()),
             ("Small", small_asc.clone())
