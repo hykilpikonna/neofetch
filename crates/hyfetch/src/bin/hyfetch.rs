@@ -906,7 +906,7 @@ fn create_config(
             let opts: Vec<Cow<str>> = ["default", "small"].map(Into::into).into();
             let choice = literal_input("Your choice?", &opts[..], "default", true, color_mode)
                 .context("failed to ask for choice input")
-                .context("failed to select color alignment").context("failed to ask for choice input")?;
+                .context("failed to select logo type").context("failed to ask for choice input")?;
             
             if choice.to_lowercase() == "small" {
                 logo_chosen = Some(running_dst_sml);
