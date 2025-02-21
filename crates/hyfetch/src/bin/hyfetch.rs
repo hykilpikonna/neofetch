@@ -855,7 +855,9 @@ fn create_config(
                             }
                             v.splice(0..0, pad_v.clone());
                             v.extend(pad_v);
-              
+
+                            let pad_diff = asc.h as usize - v.len();
+                            v.extend(std::iter::repeat("".to_string()).take(pad_diff));
                             v.push(format!("{k:^asc_width$}", asc_width = usize::from(small_asc.w)));
                             return Ok(v);
                         }
