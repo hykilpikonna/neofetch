@@ -13,15 +13,17 @@ use deranged::RangedU8;
 use enterpolation::bspline::BSpline;
 use enterpolation::{Curve as _, Generator as _};
 use hyfetch::ascii::RawAsciiArt;
+use hyfetch::ascii::NormalizedAsciiArt;
 use hyfetch::cli_options::options;
 use hyfetch::color_util::{
     clear_screen, color, printc, ContrastGrayscale as _, ForegroundBackground, Lightness,
     NeofetchAsciiIndexedColor, PresetIndexedColor, Theme as _, ToAnsiString as _,
 };
+use hyfetch::distros::Distro;
 use hyfetch::models::Config;
 #[cfg(feature = "macchina")]
 use hyfetch::neofetch_util::macchina_path;
-use hyfetch::neofetch_util::{self, add_pkg_path, fastfetch_path, get_distro_ascii, literal_input, ColorAlignment, NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII};
+use hyfetch::neofetch_util::{self, add_pkg_path, fastfetch_path, get_distro_ascii, get_distro_name, literal_input, ColorAlignment, NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII};
 use hyfetch::presets::{AssignLightness, Preset};
 use hyfetch::pride_month;
 use hyfetch::types::{AnsiMode, Backend, TerminalTheme};
@@ -782,10 +784,8 @@ fn create_config(
         &format!("{lightness:.2}", lightness = f32::from(lightness)),
     );
 
-    //////////////////////////////
-    // 5. Color arrangement
-
-    let color_align: ColorAlignment;
+   //////////////////////////////
+   // 5. Choose Default or Small Logo
 
     // Calculate amount of row/column that can be displayed on screen
     let (ascii_per_row, ascii_rows) = {
@@ -809,6 +809,124 @@ fn create_config(
             .expect("`ascii_rows` should fit in `u8`");
         (ascii_per_row, ascii_rows)
     };
+
+    // get distro string and convert it into the enum, neofetch friendly format, so we can check for small logos with the {distro}_small neofetch naming scheme.
+    let get_current_dst_str= get_distro_name(backend).context("failed to get current distro.")?;
+    
+    let detected_dst: Option<String> = if distro.is_none() {
+        Some(format!("{:?}", Distro::detect(get_current_dst_str).unwrap()))
+    } else {
+        Some(distro.unwrap().to_string())
+    };
+
+    // in case someone specified {distro}_small already in the --distro arg
+    let detected_dst_small_fmt = if !detected_dst.clone().unwrap().ends_with("_small") {
+        format!("{}_small", detected_dst.unwrap()).to_lowercase()
+    } else {
+        detected_dst.unwrap()
+    };
+    
+    let running_dst_sml = if Distro::detect(&detected_dst_small_fmt).is_some() {
+        detected_dst_small_fmt
+    } else {
+        "".to_string()
+    };
+
+    
+    // load ascii
+    let small_asc = get_distro_ascii(Some(&running_dst_sml), backend).context("failed to get distro ascii")?;
+    let small_asc = small_asc.to_normalized().context("failed to normalize ascii")?;
+    
+    let mut asc = asc;
+    let mut logo_chosen: Option<String> = distro.cloned(); 
+    
+    if small_asc.lines != asc.lines && running_dst_sml != "" { 
+        let ds_arrangements = [
+            ("Default", asc.clone()),
+            ("Small", small_asc.clone())
+        ];   
+
+        let arrangements: IndexMap<Cow<str>, NormalizedAsciiArt> =
+            ds_arrangements.map(|(k, a)| (k.into(), a)).into();
+
+        loop {
+            clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
+
+            let asciis: Vec<Vec<String>> = arrangements
+                .iter()
+                .map(|(k, a)| {
+                    let mut v: Vec<String> = a
+                        .to_recolored(&ColorAlignment::Horizontal, &color_profile, color_mode, theme)
+                        .context("failed to recolor ascii")?
+                        .lines;
+                        if k == "Small" {
+                            // vertical center
+                            let pad_len = (asc.h as usize - v.len()) / 2;
+                            let mut pad_v: Vec<String> = vec![];
+                            for _ in 0..pad_len {
+                                pad_v.push("".to_string());
+                            }
+                            v.splice(0..0, pad_v.clone());
+                            v.extend(pad_v);
+
+                            let pad_diff = asc.h as usize - v.len();
+                            v.extend(std::iter::repeat("".to_string()).take(pad_diff));
+                            v.push(format!("{k:^asc_width$}", asc_width = usize::from(small_asc.w)));
+                            return Ok(v);
+                        }
+                        v.push(format!("{k:^asc_width$}", asc_width = usize::from(asc.w)));
+                        Ok(v)
+                })
+                .collect::<Result<_>>()?;
+
+            // prints small logo w/ big logo
+            for row in &asciis.into_iter().chunks(usize::from(ascii_per_row)) {
+                
+                let row: Vec<Vec<String>> = row.collect();
+                
+                for i in 0..usize::from(asc.h).checked_add(1).unwrap() {
+                    let mut line = Vec::new();
+                    for lines in &row {
+                            line.push(&*lines[i]);
+                    }
+                    printc(line.join("                 "), color_mode).context("failed to print ascii line")?; 
+                    
+                    
+                }
+        
+                writeln!(io::stdout()).context("failed to write to stdout")?;
+            }
+
+            print_title_prompt(
+                option_counter,
+                "Do you want the default logo, or the small logo?",
+                color_mode,
+            )
+            .context("failed to print title prompt")?;
+            let opts: Vec<Cow<str>> = ["default", "small"].map(Into::into).into();
+            let choice = literal_input("Your choice?", &opts[..], "default", true, color_mode)
+                .context("failed to ask for choice input")
+                .context("failed to select logo type").context("failed to ask for choice input")?;
+            
+            if choice.to_lowercase() == "small" {
+                logo_chosen = Some(running_dst_sml);
+                asc = small_asc;
+            }
+
+            update_title(
+                &mut title,
+                &mut option_counter,
+                "Selected logo type",
+                choice.as_ref(),
+            );
+
+            break;
+        }
+    }
+    //////////////////////////////
+    // 6. Color arrangement
+
+    let color_align: ColorAlignment;
 
     // Displays horizontal and vertical arrangements in the first iteration, but
     // hide them in later iterations
@@ -905,7 +1023,7 @@ fn create_config(
                 for lines in &row {
                     line.push(&*lines[i]);
                 }
-                printc(line.join("  "), color_mode).context("failed to print ascii line")?;
+                printc(line.join("    "), color_mode).context("failed to print ascii line")?;
             }
             writeln!(io::stdout()).context("failed to write to stdout")?;
         }
@@ -956,7 +1074,7 @@ fn create_config(
     );
 
     //////////////////////////////
-    // 6. Select *fetch backend
+    // 7. Select *fetch backend
 
     let select_backend = || -> Result<Backend> {
         clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
@@ -1027,7 +1145,7 @@ fn create_config(
         color_align,
         backend,
         args: None,
-        distro: distro.cloned(),
+        distro: logo_chosen,
         pride_month_disable: false,
     };
     debug!(?config, "created config");

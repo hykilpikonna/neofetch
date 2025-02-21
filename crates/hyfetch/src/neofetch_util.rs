@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 #[cfg(feature = "macchina")]
 use std::fs;
 use std::io::{self, Write as _};
-use std::path::{PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 use std::sync::OnceLock;
 use std::{env, fmt};
@@ -482,7 +482,7 @@ where
 }
 
 #[tracing::instrument(level = "debug")]
-pub(crate) fn get_distro_name(backend: Backend) -> Result<String> {
+pub fn get_distro_name(backend: Backend) -> Result<String> {
     match backend {
         Backend::Neofetch => run_neofetch_command_piped(&["ascii_distro_name"])
             .context("failed to get distro name from neofetch"),
