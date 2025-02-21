@@ -812,15 +812,28 @@ fn create_config(
 
     // get distro string and convert it into the enum, neofetch friendly format, so we can check for small logos with the {distro}_small neofetch naming scheme.
     let get_current_dst_str= get_distro_name(backend).context("failed to get current distro.")?;
-    let detected_dst =  Distro::detect(get_current_dst_str);
-    let mut running_dst_sml = "".to_string();
-    if detected_dst.is_some() {
-        let detected_dst_small_fmt = format!("{:?}_small", detected_dst.unwrap()).to_lowercase(); 
-        if Distro::detect(&detected_dst_small_fmt).is_some() {
-            running_dst_sml = detected_dst_small_fmt;
-        }
-    }
     
+    let detected_dst: Option<String> = if distro.is_none() {
+        Some(format!("{:?}", Distro::detect(get_current_dst_str).unwrap()))
+    } else {
+        Some(distro.unwrap().to_string())
+    };
+
+    // in case someone specified {distro}_small already in the --distro arg
+    let detected_dst_small_fmt = if !detected_dst.clone().unwrap().ends_with("_small") {
+        format!("{}_small", detected_dst.unwrap()).to_lowercase()
+    } else {
+        detected_dst.unwrap()
+    };
+    
+    let running_dst_sml = if Distro::detect(&detected_dst_small_fmt).is_some() {
+        detected_dst_small_fmt
+    } else {
+        "".to_string()
+    };
+
+    
+    // load ascii
     let small_asc = get_distro_ascii(Some(&running_dst_sml), backend).context("failed to get distro ascii")?;
     let small_asc = small_asc.to_normalized().context("failed to normalize ascii")?;
     
