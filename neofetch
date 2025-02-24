@@ -517,7 +517,7 @@ de_version="on"
 # NOTE: By default we only show the disk info for '/'.
 #
 # Default: '/'
-# Values:  '/', '/dev/sdXX', '/path/to/drive'.
+# Values:  '/' '/dev/sdXX' '/path/to/drive'
 # Flag:    --disk_show
 #
 # Example:
